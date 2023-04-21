@@ -1,6 +1,6 @@
 # Gadget - SALEAE automation 
 
-#Screenshot
+# Screenshot
 ![in CSV](./docs/csv_i2c.png)
 
 # How to use
