@@ -17,16 +17,38 @@ C:\> py chk_hp_lps_csv.py -f <folder> -c <CC channel>
 ========================================================================
 Parsing....
 
-        Pass: 5         Fail: 1         at 230304\230303_110934_hard_reset.sal : [763, 1828, 2851, 3901, 4924]
-                        Not 75W at [4979]
-        Pass: 5         Fail: 1         at 230304\230304_074727_100Wseveral times.sal : [830, 1812, 2903, 3952, 5601]
-                        Not 75W at [4007]
-        230304\230310_082610_corrupt.sal is currupted.
+        > 230304\20230103_Varcolac_NoCharge_OCI1.0.4.16.0_Fail.sal
+                No 100W: 1       [763]
+        > 230304\20230103_Varcolac_NoCharge_OCI1.0.4.16.0_Pass.sal
+                HP  LPS: 1       [795]
+        > 230304\20230110_Varcolac_NoChargeIssue_PD_bootleg2.3.00.08_Fail.sal
+                No 100W: 1       [763]
+        > 230304\20230110_Varcolac_NoChargeIssue_PD_bootleg2.3.00.08_Pass.sal
+                HP  LPS: 1       [795]
+        > 230304\230303_110934_hard_reset.sal
+                No result, could be wrong CC channel assignment
+        > 230304\230304_074727_100Wseveral times.sal
+                No result, could be wrong CC channel assignment
+        > 230304\230310_082610_corrupt.sal
+                File might be corrupted
+        > 230304\230312_010125.sal
+                No result, could be wrong CC channel assignment
+        > 230304\230312_010250.sal
+                No result, could be wrong CC channel assignment
+        > 230304\230312_010530.sal
+                No result, could be wrong CC channel assignment
+        > 230304\230312_010654.sal
+                No result, could be wrong CC channel assignment
+        > 230304\230312_010934.sal
+                No result, could be wrong CC channel assignment
+        > 230304\230312_011059.sal
+                No result, could be wrong CC channel assignment
 
-Total Pass: 10
-Total Fail: 2 ( Not 75W x 2 ; No 100W x 0 )
-Total 2 logs, 12 test cycles
+Total Pass: 2
+Total Fail: 2 ( Not 75W x 0 ; No 100W x 2 )
+Total 12 logs, 4 test cycles
 ========================================================================
+
 ```
 
 # How to generate standalone executable application (for Windows)

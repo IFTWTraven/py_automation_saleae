@@ -93,6 +93,9 @@ def check_file(filepath):
             elif start_as_75w and sent_snk_cap_ext and not rise_to_100w and another_round:
                 no_100w_count +=1
                 no_100w_lines.append(snk_cap_ext_line)
+            elif start_as_75w and sent_snk_cap_ext and not rise_to_100w and not file.readlines():
+                no_100w_count +=1
+                no_100w_lines.append(snk_cap_ext_line)
                 
             elif not start_as_75w and another_round:
                 not_75w_count +=1
@@ -117,54 +120,62 @@ if __name__ == "__main__":
     # clear console 
     os.system('cls')
     
-    with open(args.input_dir+'.txt', 'w') as f:
-#        sys.stdout = f
-        print("========================================================================")
-        print("Parsing....\r\n")
+    print("========================================================================")
+    print("Parsing....\r\n")
 
-        for file_path in sal_files: 
-            salfile_path = os.path.join(os.getcwd(), args.input_dir)
-            salfile_path = os.path.join(salfile_path, os.path.basename(file_path))
-            output_file = salfile_path+'.txt'
-            export_filepath = os.path.join(export_path, output_file)
+    for file_path in sal_files: 
+        salfile_path = os.path.join(os.getcwd(), args.input_dir)
+        salfile_path = os.path.join(salfile_path, os.path.basename(file_path))
+        output_file = salfile_path+'.txt'
+        export_filepath = os.path.join(export_path, output_file)
+        
+        try:
+            with manager.load_capture(salfile_path) as capture:
+                # Add an analyzer to the capture
+                #cc_analyzer = capture.add_analyzer('Saleae_PD_CC', label=f'CC Analyzer', settings={
+                cc_analyzer = capture.add_analyzer('Saleae_PD_CC', settings={
+                    'Manchester': int(args.channel),
+                    'Bit Rate (Bits/s)': 1,
+                })
+                capture.export_data_table(filepath=export_filepath, analyzers=[cc_analyzer], columns=['Start','value'])
             
-            try:
-                with manager.load_capture(salfile_path) as capture:
-                    # Add an analyzer to the capture
-                    #cc_analyzer = capture.add_analyzer('Saleae_PD_CC', label=f'CC Analyzer', settings={
-                    cc_analyzer = capture.add_analyzer('Saleae_PD_CC', settings={
-                        'Manchester': int(args.channel),
-                        'Bit Rate (Bits/s)': 1,
-                    })
-                    capture.export_data_table(filepath=export_filepath, analyzers=[cc_analyzer], columns=['Start','value'])
-                
-                #parse HP LPS flow
-                success_count, success_lines, no_100w_count, no_100w_lines, not_75w_count, not_75w_lines = check_file(output_file)
-                
-                if no_100w_count == 0 and not_75w_count == 0:
-                    print("\tAll Pass:",success_count,"\t\t\tat", file_path, ":", success_lines)
+            #parse HP LPS flow
+            success_count, success_lines, no_100w_count, no_100w_lines, not_75w_count, not_75w_lines = check_file(output_file)
+            
+            if success_count+no_100w_count+not_75w_count == 0:
+                print("\t>",file_path,"\r\n\t\tNo result, could be wrong CC channel assignment")
+            else:
+                if success_count > 0 and no_100w_count == 0 and not_75w_count == 0:
+                    print("\t>",file_path,"\r\n\t\tHP  LPS:",success_count,"\t", success_lines)
                 
                 else:
-                    print("\tPass:", success_count, "\tFail:", no_100w_count+not_75w_count, "\tat", file_path, ":", success_lines)
+                    if success_count != 0:
+                        print("\t>",file_path,"\r\n\t\tHP  LPS:", success_count,"\t",success_lines)
+                    else:
+                        print("\t>",file_path)
                     if no_100w_count !=0:
-                        print("\t\t\tNo 100W at",no_100w_lines)
+                        print("\t\tNo 100W:", no_100w_count,"\t",no_100w_lines)
                     if not_75w_count !=0:
-                        print("\t\t\tNot 75W at",not_75w_lines)
-                    
-                total_pass_count += success_count
-                total_not_75w += not_75w_count
-                total_not_100w += no_100w_count
-                total_parse_files += 1
-            except:
-                print("\t"+file_path,"is currupted.")
-            
-        manager.close()
+                        print("\t\tNot 75W:",not_75w_count,"\t",not_75w_lines)
+                
+            total_pass_count += success_count
+            total_not_75w += not_75w_count
+            total_not_100w += no_100w_count
+            total_parse_files += 1
+        except:
+            print("\t>",file_path,"\r\n\t\tFile might be corrupted")
         
-        print("\r\nTotal Pass:", total_pass_count)
-        if total_not_75w+total_not_100w == 0:
-            print("Total Fail:", total_not_75w+total_not_100w)
-        else:
-            print("Total Fail:", total_not_75w+total_not_100w, "( Not 75W x",total_not_75w,"; No 100W x",total_not_100w,")")
-        print("Total", total_parse_files, "logs,", total_pass_count+total_not_75w+total_not_100w, "test cycles")
-        print("========================================================================")
+    manager.close()
+    
+    print("\r\nTotal Pass:", total_pass_count)
+    if total_not_75w+total_not_100w == 0:
+        print("Total Fail:", total_not_75w+total_not_100w)
+    else:
+        print("Total Fail:", total_not_75w+total_not_100w, "( Not 75W x",total_not_75w,"; No 100W x",total_not_100w,")")
+    print("Total", total_parse_files, "logs,", total_pass_count+total_not_75w+total_not_100w, "test cycles")
+    print("========================================================================")
+
+#    with open(args.input_dir+'.txt', 'w') as f:
+#        sys.stdout = f
+#        # all print() will re-route to file
 #        sys.stdout = sys.__stdout__
