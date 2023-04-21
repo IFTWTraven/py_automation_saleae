@@ -52,7 +52,8 @@ def channel_autoscan(output_file,success_count,no_100w_count,not_75w_count):
             
                 #parse HP LPS flow
                 success_count, success_seconds, no_100w_count,\
-                no_100w_seconds, not_75w_count, not_75w_seconds = check_file(output_file)
+                no_100w_seconds, not_75w_count, not_75w_seconds,\
+                hrst_count, hrst_seconds = check_file(output_file)
                 
                 # break and return channel number which is CC one
                 if success_count+no_100w_count+not_75w_count !=0:
@@ -63,7 +64,7 @@ def channel_autoscan(output_file,success_count,no_100w_count,not_75w_count):
                 start_channel_no = chk_channel+1
                 break
 
-    return success_count, success_seconds, no_100w_count, no_100w_seconds, not_75w_count, not_75w_seconds, new_valid_channel
+    return success_count, success_seconds, no_100w_count, no_100w_seconds, not_75w_count, not_75w_seconds, hrst_count, hrst_seconds, new_valid_channel
 
 def format_result(strings, output_text):
     for i in range(0, len(strings), 2):
@@ -82,10 +83,12 @@ def check_file(filepath):
     success_count = 0
     not_75w_count = 0
     no_100w_count = 0
+    hrst_count = 0
     success_seconds = []
     not_75w_seconds = []
     no_100w_seconds = []
     snk_cap_ext_seconds = []
+    hrst_seconds = []
 
     with open(filepath, 'r') as file:
         lines = file.readlines()
@@ -96,7 +99,11 @@ def check_file(filepath):
             rise_to_100w = False
             sent_snk_cap_ext = False
             another_round = False
-            
+            hrst_occurred = False
+           
+            if any(s in lines[i] for s in DEFINE_HARD_RESET):
+                hrst_occurred = True
+                
             if any(s in lines[i] for s in DEFINE_75W):
                 start_as_75w = True
 
@@ -105,6 +112,7 @@ def check_file(filepath):
                         i = j - 5
                         break
                     if any(s in lines[j] for s in DEFINE_HARD_RESET):
+                        hrst_occurred = True
                         i = j - 1
                         break
                     else:
@@ -132,6 +140,7 @@ def check_file(filepath):
                         i = j
                         break
                     if any(s in lines[j] for s in DEFINE_HARD_RESET):
+                        hrst_occurred = True
                         another_round = True
                         i = j
                         break
@@ -150,26 +159,35 @@ def check_file(filepath):
             elif start_as_75w and sent_snk_cap_ext and not rise_to_100w and not file.readlines():
                 no_100w_count +=1
                 no_100w_seconds.append(lines[i-1].split(',')[1].strip())
-                
             elif not start_as_75w and another_round:
                 not_75w_count +=1
                 not_75w_seconds.append(lines[i-1].split(',')[1].strip())
+
+            if hrst_occurred:
+                hrst_count +=1
+                if DEFINE_ORI_ANALYSER == 1:
+                    hrst_seconds.append(lines[i-1].split(',')[1].strip())
+                else:
+                    hrst_seconds.append(lines[i-1])
                 
             i += 1
 
-    return success_count, success_seconds, no_100w_count, no_100w_seconds, not_75w_count, not_75w_seconds
+    return success_count, success_seconds, no_100w_count, no_100w_seconds, not_75w_count, not_75w_seconds, hrst_count, hrst_seconds
 
 if __name__ == "__main__":
 
     total_pass_count = 0
     total_not_75w = 0
     total_not_100w = 0
+    total_hrst = 0
     total_parse_files = 0
     success_count = 0
     no_100w_count = 0
     not_75w_count = 0
+    hrst_count = 0
     fail_100w_file = []
     fail_75w_file = []
+    hrst_file = []
     
     start_time = time.time()
     
@@ -227,7 +245,8 @@ if __name__ == "__main__":
                 
                     # parse HP LPS flow
                     success_count, success_seconds, no_100w_count,\
-                    no_100w_seconds, not_75w_count, not_75w_seconds = check_file(output_file)
+                    no_100w_seconds, not_75w_count, not_75w_seconds,\
+                    hrst_count, hrst_seconds = check_file(output_file)
                     
                     # no result, maybe assign wrong CC channel
                     if success_count+no_100w_count+not_75w_count == 0:
@@ -235,6 +254,7 @@ if __name__ == "__main__":
                         # search correct CC channel
                         success_count, success_seconds, no_100w_count,\
                         no_100w_seconds, not_75w_count, not_75w_seconds,\
+                        hrst_count, hrst_seconds,\
                         last_valid_channel = channel_autoscan(output_file,success_count,no_100w_count,not_75w_count)
                         #print("found at channel", last_valid_channel)
                 except:
@@ -243,6 +263,7 @@ if __name__ == "__main__":
                     # search other channels
                     success_count, success_seconds, no_100w_count,\
                     no_100w_seconds, not_75w_count, not_75w_seconds,\
+                    hrst_count, hrst_seconds,\
                     last_valid_channel = channel_autoscan(output_file,success_count,no_100w_count,not_75w_count)
                     #print("found at channel", last_valid_channel)
                 
@@ -274,9 +295,18 @@ if __name__ == "__main__":
                             with open(output_filename, 'a') as f: 
                                 print("\t  Not 75W:", not_75w_count,"\t ["+", ".join([s[:DEFINE_TIMESTAMP_LENGTH]+'s' for s in not_75w_seconds])+"]", file=f)
 
+                if hrst_count !=0:
+                    hrst_file.append("".join([s[:DEFINE_TIMESTAMP_LENGTH]+'s' for s in hrst_seconds]))
+                    hrst_file.append(file_path)
+                    print("\t  HardRST:\033[0m", hrst_count,"\t ["+", ".join([s[:DEFINE_TIMESTAMP_LENGTH]+'s' for s in hrst_seconds])+"]")
+                    if args.o is not None:
+                        with open(output_filename, 'a') as f: 
+                            print("\t  HardRST:", hrst_count,"\t ["+", ".join([s[:DEFINE_TIMESTAMP_LENGTH]+'s' for s in hrst_seconds])+"]", file=f)
+                                
                 total_pass_count += success_count
                 total_not_75w += not_75w_count
                 total_not_100w += no_100w_count
+                total_hrst += hrst_count
                 total_parse_files += 1
                 # delete exported csv file after parsing files
                 os.remove(output_file)
@@ -291,33 +321,40 @@ if __name__ == "__main__":
     end_time = time.time()    
     
     # print summary
-    print("\033[1m\nTotal Logs:", total_parse_files, "files")
+    print("\033[93m\nTotal Logs:", total_parse_files, "files")
     print("Total Test:", total_pass_count+total_not_75w+total_not_100w, "cycles")
-    print("Total Pass:", total_pass_count, "time\033[0m")
+    print("Total Pass:", total_pass_count, "time")
     if args.o is not None:
         with open(output_filename, 'a') as f: 
             print("\nTotal Logs:", total_parse_files, "files", file=f)
             print("Total Test:", total_pass_count+total_not_75w+total_not_100w, "cycles", file=f)
             print("Total Pass:", total_pass_count, "time", file=f)
 
+    if total_hrst != 0:
+        print("\033[33mTotal HRST:", total_hrst, "time")
+        if args.o is not None:
+            with open(output_filename, 'a') as f: 
+                print("Total HRST:", total_hrst, "time", file=f)
+        format_result(hrst_file, output_filename)
+        
     if total_not_75w+total_not_100w == 0:
-        print("Total Fail:", total_not_75w+total_not_100w, "time")
+        print("\033[91mTotal Fail:", total_not_75w+total_not_100w, "time")
         if args.o is not None:
             with open(output_filename, 'a') as f: 
                 print("Total Fail:", total_not_75w+total_not_100w, "time", file=f)
     else:
-        print("\033[1mTotal Fail:\033[0m", total_not_75w+total_not_100w, "\033[1mtime\033[0m")
+        print("\033[91mTotal Fail:", total_not_75w+total_not_100w, "time")
         if args.o is not None:
             with open(output_filename, 'a') as f: 
                 print("Total Fail:", total_not_75w+total_not_100w, "time", file=f)
         if total_not_75w:
-            print("\033[1m\t> Not 75W x", total_not_75w, "\033[0m")
+            print("\t> Not 75W x", total_not_75w)
             if args.o is not None:
                 with open(output_filename, 'a') as f: 
                     print("\t> Not 75W x", total_not_75w, file= f)
             format_result(fail_75w_file, output_filename)
         if total_not_100w:
-            print("\033[1m\t> No 100W x",total_not_100w, "\033[0m")
+            print("\t> No 100W x",total_not_100w)
             if args.o is not None:
                 with open(output_filename, 'a') as f: 
                     print("\t> No 100W x",total_not_100w, file=f)
@@ -329,7 +366,7 @@ if __name__ == "__main__":
     minutes = int(elapsed_time // 60)
     seconds = int(elapsed_time % 60)
     # Output elapsed time in minutes and seconds
-    print("\033[1mTotal Time: {} min {} sec".format(minutes, seconds)+'\033[0m')
+    print("\033[36mTotal Time: {} min {} sec".format(minutes, seconds)+'\033[0m')
     print("========================================================================")
     if args.o is not None:
         with open(output_filename, 'a') as f: 

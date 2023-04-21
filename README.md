@@ -7,9 +7,14 @@
 - [ ] place all SALEAE logs into a folder
 - [ ] ***CLOSE all running saleae logic2 applications
 - [ ] exectue python command and this application will export SALEAE logs into .csv
+- [ ] this application can examine HP LPS flow in SALEAE logs and output results with timestamp. 
+- [ ] this application can report HARD RESET timestamp and filename
+- [ ] this application will auto scan CC channel even assigned channel is incorrect or logs in 
+	  folder use different CC channel. 
+- [ ] this application will skip and prompt file corrupted if log is fail to open.
 
 ```
-C:\> py chk_hp_lps_csv.py -f <folder> -c <CC channel>
+C:\> py chk_hp_lps_csv.py -f <folder> -c <CC channel> -o <output file>
 ```
 
 ## Console Output
