@@ -23,6 +23,32 @@ def parseArguments ():
     return parser.parse_args()
     # ...
 
+def channel_autoscan(output_file,success_count,no_100w_count,not_75w_count):
+    #re-scan all channels if assigned channel is incorrect
+    start_channel_no = 0
+    while success_count+no_100w_count+not_75w_count == 0:
+        #print("\t>",file_path,"\r\n\t\tNo result, could be wrong CC channel assignment, retrying....")
+        
+        for chk_channel in range(start_channel_no, 16):
+            try:
+                cc_analyzer = capture.add_analyzer('Saleae_PD_CC', settings={
+                    'Manchester': chk_channel,
+                    'Bit Rate (Bits/s)': 1,
+                })
+                capture.export_data_table(filepath=export_filepath, analyzers=[cc_analyzer], columns=['Start','value'])
+            
+                #parse HP LPS flow
+                success_count, success_lines, no_100w_count, no_100w_lines, not_75w_count, not_75w_lines = check_file(output_file)
+                
+                if success_count+no_100w_count+not_75w_count !=0:
+                    new_valid_channel = chk_channel
+                    break
+            except:
+                start_channel_no = chk_channel+1
+                break
+
+    return success_count, success_lines, no_100w_count, no_100w_lines, not_75w_count, not_75w_lines, new_valid_channel
+
 def check_file(filepath):
     success_count = 0
     success_lines = []
@@ -112,8 +138,14 @@ if __name__ == "__main__":
     total_not_75w = 0
     total_not_100w = 0
     total_parse_files = 0
+    success_count = 0
+    no_100w_count = 0
+    not_75w_count = 0
+    
+    start_time = time.time()
     
     args = parseArguments()
+    last_valid_channel = int(args.channel)
 
     directory_path = args.input_dir
     sal_files = glob.glob(os.path.join(directory_path, "*.sal"))
@@ -132,60 +164,48 @@ if __name__ == "__main__":
         
         try:
             with manager.load_capture(salfile_path) as capture:
+                print("\t>",file_path)
                 # Add an analyzer to the capture
-                #cc_analyzer = capture.add_analyzer('Saleae_PD_CC', label=f'CC Analyzer', settings={
-                cc_analyzer = capture.add_analyzer('Saleae_PD_CC', settings={
-                    'Manchester': int(args.channel),
-                    'Bit Rate (Bits/s)': 1,
-                })
-                capture.export_data_table(filepath=export_filepath, analyzers=[cc_analyzer], columns=['Start','value'])
-            
-                #parse HP LPS flow
-                success_count, success_lines, no_100w_count, no_100w_lines, not_75w_count, not_75w_lines = check_file(output_file)
+                try:
+                    cc_analyzer = capture.add_analyzer('Saleae_PD_CC', settings={
+                        'Manchester': last_valid_channel,
+                        'Bit Rate (Bits/s)': 1,
+                    })
+                    capture.export_data_table(filepath=export_filepath, analyzers=[cc_analyzer], columns=['Start','value'])
                 
-                #re-scan all channels if assigned channel is incorrect
-                start_channel_no = 0
-                while success_count+no_100w_count+not_75w_count == 0:
-                    #print("\t>",file_path,"\r\n\t\tNo result, could be wrong CC channel assignment, retrying....")
+                    #parse HP LPS flow
+                    success_count, success_lines, no_100w_count, no_100w_lines, not_75w_count, not_75w_lines = check_file(output_file)
                     
-                    for chk_channel in range(start_channel_no, 16):
-                        try:
-                            cc_analyzer = capture.add_analyzer('Saleae_PD_CC', settings={
-                                'Manchester': chk_channel,
-                                'Bit Rate (Bits/s)': 1,
-                            })
-                            capture.export_data_table(filepath=export_filepath, analyzers=[cc_analyzer], columns=['Start','value'])
-                        
-                            #parse HP LPS flow
-                            success_count, success_lines, no_100w_count, no_100w_lines, not_75w_count, not_75w_lines = check_file(output_file)
-                            
-                            if success_count+no_100w_count+not_75w_count !=0:
-                                break
-                        except:
-                            start_channel_no = chk_channel+1
-                            break
-                
+                    if success_count+no_100w_count+not_75w_count == 0:
+                        print("\t  Channel",last_valid_channel,"is not CC, scan others....")
+                        success_count, success_lines, no_100w_count, no_100w_lines, not_75w_count, not_75w_lines, last_valid_channel = channel_autoscan(output_file,success_count,no_100w_count,not_75w_count)
+                    
+                except:
+                    print("\t  Channel",last_valid_channel,"doesn't exist, scan others....")
+                    success_count, success_lines, no_100w_count, no_100w_lines, not_75w_count, not_75w_lines, last_valid_channel = channel_autoscan(output_file,success_count,no_100w_count,not_75w_count)
+
                 if success_count > 0 and no_100w_count == 0 and not_75w_count == 0:
-                    print("\t>",file_path,"\r\n\t\tHP  LPS:",success_count,"\t", success_lines)
+                    print("\t\tHP  LPS:",success_count,"\t", success_lines)
                 
                 else:
                     if success_count != 0:
-                        print("\t>",file_path,"\r\n\t\tHP  LPS:", success_count,"\t",success_lines)
-                    else:
-                        print("\t>",file_path)
+                        print("\t\tHP  LPS:", success_count,"\t",success_lines)
+                    #else:
+                        #print("\t>",file_path)
                     if no_100w_count !=0:
                         print("\t\tNo 100W:", no_100w_count,"\t",no_100w_lines)
                     if not_75w_count !=0:
                         print("\t\tNot 75W:",not_75w_count,"\t",not_75w_lines)
                 
-            total_pass_count += success_count
-            total_not_75w += not_75w_count
-            total_not_100w += no_100w_count
-            total_parse_files += 1
+                total_pass_count += success_count
+                total_not_75w += not_75w_count
+                total_not_100w += no_100w_count
+                total_parse_files += 1
         except:
-            print("\t>",file_path,"\r\n\t\tFile might be corrupted")
+            print("\t>",file_path,"\r\n\t  File might be corrupted")
         
     manager.close()
+    end_time = time.time()    
     
     print("\r\nTotal Pass:", total_pass_count)
     if total_not_75w+total_not_100w == 0:
@@ -193,6 +213,15 @@ if __name__ == "__main__":
     else:
         print("Total Fail:", total_not_75w+total_not_100w, "( Not 75W x",total_not_75w,"; No 100W x",total_not_100w,")")
     print("Total", total_parse_files, "logs,", total_pass_count+total_not_75w+total_not_100w, "test cycles")
+
+    # Calculate elapsed time in seconds
+    elapsed_time = end_time - start_time
+    # Convert elapsed time to minutes and seconds
+    minutes = int(elapsed_time // 60)
+    seconds = int(elapsed_time % 60)
+
+    # Output elapsed time in minutes and seconds
+    print("Total Time {} min(s) {} sec(s)".format(minutes, seconds))
     print("========================================================================")
 
 #    with open(args.input_dir+'.txt', 'w') as f:

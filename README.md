@@ -18,6 +18,7 @@ C:\> py chk_hp_lps_csv.py -f <folder> -c <CC channel>
 Parsing....
 
         > 230304\20230103_Varcolac_NoCharge_OCI1.0.4.16.0_Fail.sal
+          Channel 8 doesn't exist, scan others....
                 No 100W: 1       [763]
         > 230304\20230103_Varcolac_NoCharge_OCI1.0.4.16.0_Pass.sal
                 HP  LPS: 1       [795]
@@ -26,14 +27,16 @@ Parsing....
         > 230304\20230110_Varcolac_NoChargeIssue_PD_bootleg2.3.00.08_Pass.sal
                 HP  LPS: 1       [795]
         > 230304\230303_110934_hard_reset.sal
+          Channel 9 is not CC, scan others....
                 HP  LPS: 5       [763, 1828, 2851, 3901, 4924]
                 Not 75W: 1       [4979]
         > 230304\230304_074727_100Wseveral times.sal
                 HP  LPS: 5       [830, 1812, 2903, 3952, 5601]
                 Not 75W: 1       [4007]
         > 230304\230310_082610_corrupt.sal
-                File might be corrupted
+          File might be corrupted
         > 230304\230312_010125.sal
+          Channel 12 is not CC, scan others....
                 HP  LPS: 5       [790, 1909, 2944, 4021, 5098]
         > 230304\230312_010250.sal
                 HP  LPS: 4       [790, 1867, 3020, 4021]
@@ -49,8 +52,8 @@ Parsing....
 Total Pass: 38
 Total Fail: 4 ( Not 75W x 2 ; No 100W x 2 )
 Total 12 logs, 42 test cycles
+Total Time 1 min(s) 9 sec(s)
 ========================================================================
-
 ```
 
 # How to generate standalone executable application (for Windows)
