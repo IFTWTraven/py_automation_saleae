@@ -24,10 +24,11 @@ DEFINE_TIMESTAMP_LENGTH = 7
 
 def parseArguments ():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', required=True, help="", metavar="<input dir>",dest='input_dir')
-    parser.add_argument('-c', required=True, help="", metavar="<analyser channel>",dest='channel')
+    parser.add_argument('-f', dest='input_dir', required=True, help="")
+    parser.add_argument('-c', dest='channel', required=True, help="")
     #parser.add_argument('-t', dest='define_timestamp', action='store_true', help="use -t to print results with timestamp")
     #parser.add_argument('-l', dest='define_linenumber', action='store_true', help="use -l to print results with line number")
+    parser.add_argument('-o', nargs='?', const='', type=str, help='')
 
     return parser.parse_args()
     # ...
@@ -63,6 +64,19 @@ def channel_autoscan(output_file,success_count,no_100w_count,not_75w_count):
                 break
 
     return success_count, success_seconds, no_100w_count, no_100w_seconds, not_75w_count, not_75w_seconds, new_valid_channel
+
+def format_result(strings, output_text):
+    for i in range(0, len(strings), 2):
+        if i+1 < len(strings):
+            print("\t  " + strings[i] + "\t" + strings[i+1])
+            if output_text is not None:
+                with open(output_text, 'a') as f: 
+                    print("\t  " + strings[i] + "\t" + strings[i+1], file=f)
+        else:
+            print(strings[i])
+            if output_text is not None:
+                with open(output_text, 'a') as f: 
+                    print(strings[i], file=f)
 
 def check_file(filepath):
     success_count = 0
@@ -154,6 +168,8 @@ if __name__ == "__main__":
     success_count = 0
     no_100w_count = 0
     not_75w_count = 0
+    fail_100w_file = []
+    fail_75w_file = []
     
     start_time = time.time()
     
@@ -162,12 +178,26 @@ if __name__ == "__main__":
 
     directory_path = args.input_dir
     sal_files = glob.glob(os.path.join(directory_path, "*.sal"))
+
+    if args.o is not None:
+        output_filename = args.o if args.o else args.input_dir
+        output_filename = output_filename+'.txt'
+    else:
+        output_filename = None
+    
     manager = automation.Manager.launch()
     # clear console 
     os.system('cls')
-    
-    print("========================================================================")
-    print("Parsing....\r\n")
+       
+    if args.o is not None:
+        print("========================================================================")
+        print("Parsing and save to",output_filename)
+        with open(output_filename, 'w') as f: 
+            print("========================================================================", file=f)
+            print("Parsing and save to",output_filename,"\n", file=f)
+    else:
+        print("========================================================================")
+        print("Parsing....\n")
 
     for file_path in sal_files: 
         salfile_path = os.path.join(os.getcwd(), args.input_dir)
@@ -177,7 +207,10 @@ if __name__ == "__main__":
         
         try:
             with manager.load_capture(salfile_path) as capture:
-                print("\t>",file_path)
+                print("\033[1m\t>",file_path+'\033[0m')
+                if args.o is not None:
+                    with open(output_filename, 'a') as f: 
+                        print("\t>",file_path, file=f)
                 # Add an analyzer to the capture
                 try:
                     if DEFINE_ORI_ANALYSER:
@@ -216,15 +249,31 @@ if __name__ == "__main__":
                 # all pass in log
                 if success_count > 0 and no_100w_count == 0 and not_75w_count == 0:
                     # re-format success_seconds array into fixed string length, add ',' and print
-                    print("\t  HP  LPS:",success_count,"\t ["+", ".join([s[:DEFINE_TIMESTAMP_LENGTH]+'s' for s in success_seconds])+"]")
+                    print("\t  All  OK:",success_count,"\t ["+", ".join([s[:DEFINE_TIMESTAMP_LENGTH]+'s' for s in success_seconds])+"]")
+                    if args.o is not None:
+                        with open(output_filename, 'a') as f: 
+                            print("\t  All  OK:",success_count,"\t ["+", ".join([s[:DEFINE_TIMESTAMP_LENGTH]+'s' for s in success_seconds])+"]", file=f)
                 else:
                     if success_count != 0:
                         print("\t  HP  LPS:", success_count,"\t ["+", ".join([s[:DEFINE_TIMESTAMP_LENGTH]+'s' for s in success_seconds])+"]")
+                        if args.o is not None:
+                            with open(output_filename, 'a') as f: 
+                                print("\t  HP  LPS:", success_count,"\t ["+", ".join([s[:DEFINE_TIMESTAMP_LENGTH]+'s' for s in success_seconds])+"]", file=f)
                     if no_100w_count !=0:
-                        print("\t  No 100W:", no_100w_count,"\t ["+", ".join([s[:DEFINE_TIMESTAMP_LENGTH]+'s' for s in no_100w_seconds])+"]")
+                        fail_100w_file.append("".join([s[:DEFINE_TIMESTAMP_LENGTH]+'s' for s in no_100w_seconds]))
+                        fail_100w_file.append(file_path)
+                        print("\t  No 100W:\033[0m", no_100w_count,"\t ["+", ".join([s[:DEFINE_TIMESTAMP_LENGTH]+'s' for s in no_100w_seconds])+"]")
+                        if args.o is not None:
+                            with open(output_filename, 'a') as f: 
+                                print("\t  No 100W:", no_100w_count,"\t ["+", ".join([s[:DEFINE_TIMESTAMP_LENGTH]+'s' for s in no_100w_seconds])+"]", file=f)
                     if not_75w_count !=0:
-                        print("\t  Not 75W:", not_75w_count,"\t ["+", ".join([s[:DEFINE_TIMESTAMP_LENGTH]+'s' for s in not_75w_seconds])+"]")
-                        
+                        fail_75w_file.append("".join([s[:DEFINE_TIMESTAMP_LENGTH]+'s' for s in not_75w_seconds]))
+                        fail_75w_file.append(file_path)
+                        print("\t  Not 75W:\033[0m", not_75w_count,"\t ["+", ".join([s[:DEFINE_TIMESTAMP_LENGTH]+'s' for s in not_75w_seconds])+"]")
+                        if args.o is not None:
+                            with open(output_filename, 'a') as f: 
+                                print("\t  Not 75W:", not_75w_count,"\t ["+", ".join([s[:DEFINE_TIMESTAMP_LENGTH]+'s' for s in not_75w_seconds])+"]", file=f)
+
                 total_pass_count += success_count
                 total_not_75w += not_75w_count
                 total_not_100w += no_100w_count
@@ -233,29 +282,59 @@ if __name__ == "__main__":
                 os.remove(output_file)
         except:
             # fail in assigning analyser in log file. 
-            print("\t>",file_path,"\r\n\t\tFile might be corrupted")
+            print("\033[31m\t>",file_path, "\n\t  **File might be corrupted**\033[0m")
+            if args.o is not None:
+                with open(output_filename, 'a') as f: 
+                    print("\t>",file_path,"\n\t  **File might be corrupted**", file=f)
         
     manager.close()
     end_time = time.time()    
     
-    #print summary
-    print("\r\nTotal Pass:", total_pass_count)
+    # print summary
+    print("\033[1m\nTotal Logs:", total_parse_files, "files")
+    print("Total Test:", total_pass_count+total_not_75w+total_not_100w, "cycles")
+    print("Total Pass:", total_pass_count, "time\033[0m")
+    if args.o is not None:
+        with open(output_filename, 'a') as f: 
+            print("\nTotal Logs:", total_parse_files, "files", file=f)
+            print("Total Test:", total_pass_count+total_not_75w+total_not_100w, "cycles", file=f)
+            print("Total Pass:", total_pass_count, "time", file=f)
+
     if total_not_75w+total_not_100w == 0:
-        print("Total Fail:", total_not_75w+total_not_100w)
+        print("Total Fail:", total_not_75w+total_not_100w, "time")
+        if args.o is not None:
+            with open(output_filename, 'a') as f: 
+                print("Total Fail:", total_not_75w+total_not_100w, "time", file=f)
     else:
-        print("Total Fail:", total_not_75w+total_not_100w, "( Not 75W x",total_not_75w,"; No 100W x",total_not_100w,")")
-    print("Total", total_parse_files, "logs,", total_pass_count+total_not_75w+total_not_100w, "test cycles")
+        print("\033[1mTotal Fail:\033[0m", total_not_75w+total_not_100w, "\033[1mtime\033[0m")
+        if args.o is not None:
+            with open(output_filename, 'a') as f: 
+                print("Total Fail:", total_not_75w+total_not_100w, "time", file=f)
+        if total_not_75w:
+            print("\033[1m\t> Not 75W x", total_not_75w, "\033[0m")
+            if args.o is not None:
+                with open(output_filename, 'a') as f: 
+                    print("\t> Not 75W x", total_not_75w, file= f)
+            format_result(fail_75w_file, output_filename)
+        if total_not_100w:
+            print("\033[1m\t> No 100W x",total_not_100w, "\033[0m")
+            if args.o is not None:
+                with open(output_filename, 'a') as f: 
+                    print("\t> No 100W x",total_not_100w, file=f)
+            format_result(fail_100w_file, output_filename)
 
     # Calculate elapsed time in seconds
     elapsed_time = end_time - start_time
     # Convert elapsed time to minutes and seconds
     minutes = int(elapsed_time // 60)
     seconds = int(elapsed_time % 60)
-
     # Output elapsed time in minutes and seconds
-    print("Total Time {} min(s) {} sec(s)".format(minutes, seconds))
+    print("\033[1mTotal Time: {} min {} sec".format(minutes, seconds)+'\033[0m')
     print("========================================================================")
-
+    if args.o is not None:
+        with open(output_filename, 'a') as f: 
+            print("Total Time: {} min {} sec".format(minutes, seconds), file=f)
+            print("========================================================================", file=f)
 #    with open(args.input_dir+'.txt', 'w') as f:
 #        sys.stdout = f
 #        # all print() will re-route to file
