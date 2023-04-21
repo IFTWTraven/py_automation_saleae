@@ -1,7 +1,4 @@
-# Gadget - SALEAE automation 
-
-# Screenshot
-![in CSV](./docs/csv_cc.png)
+# Gadget - SALEAE2 automation 
 
 # How to use
 - [ ] capture CC in SALEAE Logic2 with 6.25Mbps, 1.2V digital mode
@@ -12,31 +9,27 @@
 - [ ] exectue python command and this application will export SALEAE logs into .csv
 
 ```
-C:\> py auto_saleae.exe -f <folder> -c <CC channel>
+C:\> py chk_hp_lps_csv.py -f <folder> -c <CC channel>
 ```
 
 ## Console Output
 ```
-C:\> py auto_saleae.py -f test -c 0
-INFO:saleae.automation.manager:sub ChannelConnectivity.IDLE
-INFO:saleae.automation.manager:sub ChannelConnectivity.CONNECTING
-INFO:saleae.automation.manager:sub ChannelConnectivity.TRANSIENT_FAILURE
-INFO:saleae.automation.manager:sub ChannelConnectivity.READY
+========================================================================
+Parsing....
 
-C:\>
+        Pass: 5         Fail: 1         at 230304\230303_110934_hard_reset.sal : [763, 1828, 2851, 3901, 4924]
+                        Not 75W at [4979]
+        Pass: 5         Fail: 1         at 230304\230304_074727_100Wseveral times.sal : [830, 1812, 2903, 3952, 5601]
+                        Not 75W at [4007]
+        230304\230310_082610_corrupt.sal is currupted.
+
+Total Pass: 10
+Total Fail: 2 ( Not 75W x 2 ; No 100W x 0 )
+Total 2 logs, 12 test cycles
+========================================================================
 ```
 
 # How to generate standalone executable application (for Windows)
 ```
 nuitka --standalone auto_saleae.py
-```
-Command becomes
-```
-C:\auto_saleae.dist> auto_saleae.exe -f test -c 0
-INFO:saleae.automation.manager:sub ChannelConnectivity.IDLE
-INFO:saleae.automation.manager:sub ChannelConnectivity.CONNECTING
-INFO:saleae.automation.manager:sub ChannelConnectivity.TRANSIENT_FAILURE
-INFO:saleae.automation.manager:sub ChannelConnectivity.READY
-
-C:\>
 ```
