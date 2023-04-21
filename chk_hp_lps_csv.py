@@ -8,6 +8,7 @@ import sys
 import os
 import os.path
 import glob
+import time
 
 export_path = os.getcwd()
 args=None
@@ -139,12 +140,31 @@ if __name__ == "__main__":
                 })
                 capture.export_data_table(filepath=export_filepath, analyzers=[cc_analyzer], columns=['Start','value'])
             
-            #parse HP LPS flow
-            success_count, success_lines, no_100w_count, no_100w_lines, not_75w_count, not_75w_lines = check_file(output_file)
-            
-            if success_count+no_100w_count+not_75w_count == 0:
-                print("\t>",file_path,"\r\n\t\tNo result, could be wrong CC channel assignment")
-            else:
+                #parse HP LPS flow
+                success_count, success_lines, no_100w_count, no_100w_lines, not_75w_count, not_75w_lines = check_file(output_file)
+                
+                #re-scan all channels if assigned channel is incorrect
+                start_channel_no = 0
+                while success_count+no_100w_count+not_75w_count == 0:
+                    #print("\t>",file_path,"\r\n\t\tNo result, could be wrong CC channel assignment, retrying....")
+                    
+                    for chk_channel in range(start_channel_no, 16):
+                        try:
+                            cc_analyzer = capture.add_analyzer('Saleae_PD_CC', settings={
+                                'Manchester': chk_channel,
+                                'Bit Rate (Bits/s)': 1,
+                            })
+                            capture.export_data_table(filepath=export_filepath, analyzers=[cc_analyzer], columns=['Start','value'])
+                        
+                            #parse HP LPS flow
+                            success_count, success_lines, no_100w_count, no_100w_lines, not_75w_count, not_75w_lines = check_file(output_file)
+                            
+                            if success_count+no_100w_count+not_75w_count !=0:
+                                break
+                        except:
+                            start_channel_no = chk_channel+1
+                            break
+                
                 if success_count > 0 and no_100w_count == 0 and not_75w_count == 0:
                     print("\t>",file_path,"\r\n\t\tHP  LPS:",success_count,"\t", success_lines)
                 
