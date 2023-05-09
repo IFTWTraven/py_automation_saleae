@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QProgressBar
 from PyQt5.QtCore import QTimer, QObject
 
 from ui import Ui_MainWindow
-from run import RunSaleaeAutomation, SetupControlBoard, ConnectControl, Saleae_Setup, Saleae_Close, Saleae_StartCapture, Saleae_StopCapture
+from run import *
 from enum import IntEnum
 from pymata4 import pymata4
 from saleae import automation
@@ -85,6 +85,12 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         self.config = 0
         self.capture_setting = 0
         
+        # system usbtree
+        self.usbinit = []
+        self.usbdev = []
+        self.usbmiss = []
+        self.logsuffix = ''
+        
         self.refresh_gB()
         
     def setup_control(self):
@@ -116,9 +122,11 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         self.timerInitBoard = QTimer()
         self.timerConnect = QTimer()
         self.timerDisconnect = QTimer()
+        self.timerChkEnum = QTimer()
         self.timerInitBoard.timeout.connect(self.BoardInit)
         self.timerConnect.timeout.connect(self.BoardConnected)
         self.timerDisconnect.timeout.connect(self.BoardDisconnected)
+        self.timerChkEnum.timeout.connect(self.ChkSystemUSBEnum)
 
         self.ui.lcdNum_total.display(self.ui.sB_runs.value() * self.ui.sB_cycle.value())
         
@@ -130,8 +138,8 @@ class MainWindow_controller(QtWidgets.QMainWindow):
                     self.ch_idx_i2c_slk1, self.ch_idx_i2c_slk2, self.ch_idx_i2c_slk3, self.ch_idx_i2c_slk4,\
                     self.ch_idx_uart1, self.ch_idx_uart2, self.ch_idx_uart3, self.ch_idx_uart4,\
                     self.ch_idx_cc1, self.ch_idx_cc2, self.ch_idx_cc3, self.ch_idx_cc4])) == 16:
-                # disconnect timeframe is 2 seconds or later than connect timeframe
-                if (self.ui.sB_disconnect.value() - self.ui.sB_connect.value()) > 2:
+                # disconnect timeframe is 5 seconds or later than connect timeframe
+                if (self.ui.sB_disconnect.value() - self.ui.sB_connect.value()) > 5:
                     self.ui.pB_exec.setEnabled(True)
                 else:
                     self.ui.pB_exec.setEnabled(False)
@@ -173,6 +181,16 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         # connect to controll board and start test
         if self.is_running:
         
+            self.logsuffix = ''
+            self.usbmiss = []
+            
+            self.boardconnection = True
+            ConnectControl(self)
+            time.sleep(5)
+            self.usbinit = GetCurrentUSBTree(self)
+            self.boardconnection = False       
+            ConnectControl(self)
+            
             # init saleae
             self.manager, self.sdevice, self.config, self.capture_settings,\
             self.enabled_ch_i2c, self.enabled_ch_uart, self.enabled_ch_cc = Saleae_Setup(self)
@@ -201,6 +219,8 @@ class MainWindow_controller(QtWidgets.QMainWindow):
 
                 self.timerConnect.start(OneSecond*self.ui.sB_connect.value())
                 self.timerDisconnect.start(OneSecond*self.ui.sB_disconnect.value())
+                # check usb enumeration 1 second ahead of disconnection
+                self.timerChkEnum.start(OneSecond*(self.ui.sB_disconnect.value() - 1))
                                 
                 self.counter_cycle += 1
             else:
@@ -211,6 +231,8 @@ class MainWindow_controller(QtWidgets.QMainWindow):
                 self.counter_runs += 1
                 self.counter_cycle = 0
 
+                self.logsuffix = ''
+                self.usbmiss = []
                 self.timerInitBoard.start(10)
         else:
             self.is_running = False
@@ -236,7 +258,17 @@ class MainWindow_controller(QtWidgets.QMainWindow):
 
         if self.is_running:
             self.timerInitBoard.start(10)
-                                   
+
+    def ChkSystemUSBEnum(self):
+        self.timerChkEnum.stop()
+        self.usbdev = GetCurrentUSBTree(self)
+        self.usbmiss = CompareUSBTree(self)
+
+        if len(self.usbmiss):
+            self.logsuffix += '_r' + str(self.counter_runs) + 'c' + str(self.counter_cycle) + '_'
+            self.logsuffix +=  '_'.join(self.usbmiss)
+            print(self.logsuffix)
+
     def on_sB_runs_valueChanged(self):
         self.ui.hSB_runs.setValue(self.ui.sB_runs.value())
 

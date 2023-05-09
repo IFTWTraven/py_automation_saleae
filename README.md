@@ -14,11 +14,11 @@
 
 ## Pre-requisite
 
-- a Arduino board
+- An Arduino board
   # ![arduino_mega](/docs/arduino_mega.png)
-- a 5V 4 channels relay board
+- A 5V 4 channels relay board
   # ![5V_4ch_relay](/docs/5V_4ch_Relay.png)
-- a Infineon CC adapter
+- An Infineon CC adapter
   # ![CC Adapter](/docs/cc_adapter.png)
 - Install Python: https://www.python.org/ (Python 3.8+)
 - Install QT Designer: https://build-system.fman.io/qt-designer-download
@@ -34,18 +34,25 @@
 
 ## How to use
 
-- follow https://realpython.com/arduino-python/, “Hello, World!” With Arduino and Python section to setup arduino board
+- Follow https://realpython.com/arduino-python/, “Hello, World!” With Arduino and Python section to setup arduino board
   # ![arduino](/docs/arduino.png)
-- connect arduino board to PC
-- connect Saleae Pro 8/16 to PC (will enter Demo mode if no Saleae unit is attached)
-- assign I2C, UART or CC channels via Channel Setup section
-- assign test conditions in Sequence Setup section
+- Connect Relay 1/2/3 to CC1/CC2/VBUS on Infineon CC adapter board
+- Connect Arduino board to PC
+- Connect Saleae Pro 8/16 to PC (will enter Demo mode if no Saleae unit is attached)
+- Assign I2C, UART or CC channels via Channel Setup section
+- Assign test conditions in Sequence Setup section
 - ***IMPORTANT***: CLOSE all running saleae logic2 applications
-- exectue python command
+- Exectue python command
   ```
   py main.py
   ```
-- This app will record Saleae logs and save to a sub-folder using current system time/date as its name
+- This app will 
+  * Connect/Disconnect test unit once and grab all enumerated USB devices as init config
+  * Start connect/disconnect tests per sequence setup 
+  * Check USB enumeration status
+  * Assign analysers to captured log at each test run end
+  * Append run and cycle and pid/vid information in saved filename if USB enumeration staus doesn't match to init config
+  * Close Saleae application
 
 ## Limitation
 

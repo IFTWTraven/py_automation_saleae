@@ -3,6 +3,9 @@ from pymata4 import pymata4
 from saleae import automation
 from datetime import datetime
 
+import win32com.client
+import re
+
 import os
 import os.path
 import time
@@ -169,7 +172,7 @@ def Saleae_StopCapture(self):
         os.makedirs(output_dir)
     
     #output_dir = os.getcwd()
-    output_prefix = f'{datetime.now().strftime("%Y_%m_%d_%H_%M_%S_")}'
+    output_prefix = f'{datetime.now().strftime("%Y_%m_%d_%H_%M_%S_")+ self.logsuffix}'
     
     # Export analyzer data to a CSV file
     analyzer_export_filepath = os.path.join(output_dir, output_prefix +'.csv')
@@ -227,9 +230,9 @@ def Saleae_StopCapture(self):
     except:
         # do not export to .csv file if no analyser is attached
         pass
-    
+        
     # Finally, save the capture to a file
-    capture_filepath = os.path.join(output_dir, output_prefix +'.sal')
+    capture_filepath = os.path.join(output_dir, output_prefix + '.sal')
     capture.save_capture(filepath=capture_filepath)
     
     # close captured session to release memory consumption
@@ -294,3 +297,41 @@ def Saleae_Setup(self):
 
     return manager, sdevice, config, capture_settings, enabled_ch_i2c, enabled_ch_uart, enabled_ch_cc
 
+def GetCurrentUSBTree(self):
+    try:
+        usb_list = []
+        wmi = win32com.client.GetObject("winmgmts:")
+        for usb in wmi.InstancesOf("Win32_USBHub"):
+            usb_list.append(usb.DeviceID)
+
+        return usb_list
+    except Exception as error:
+        print('error', error)
+
+def CompareUSBTree(self):
+    set_retrive = set(self.usbdev)
+    set_define = set(self.usbinit)
+
+    if len(set_retrive) > len(set_define):
+        missing_elem = set_retrive - set_define
+    else:
+        missing_elem = set_define - set_retrive
+
+    missing_list=[]
+
+    if missing_elem:
+        for i in missing_elem:   
+
+            rhub_match = re.search(r"ROOT_HUB", i)
+            if rhub_match:
+                part = i.split('\\')
+                missing_list.append(part[1])
+
+            vid_match = re.search(r"VID_([0-9A-Fa-f]{4})", i)
+            if vid_match:
+                missing_list.append(vid_match.group(1))
+                
+                pid_match = re.search(r"PID_([0-9A-Fa-f]{4})", i)
+                if pid_match:
+                    missing_list.append(pid_match.group(1))
+    return missing_list
