@@ -74,10 +74,12 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         self.enabled_ch_i2c = self.enabled_ch_uart = self.enabled_ch_cc = []
 
         self.is_running = False
-        self.board = SetupControlBoard(self)
-        self.boardconnection = False
         self.counter_runs = 0
         self.counter_cycle = 0
+        self.board = SetupControlBoard(self)
+        # make relay in connection stage for USB list download
+        self.boardconnection = True
+        ConnectControl(self)
         
         #saleae parameters
         self.manager = 0
@@ -183,10 +185,8 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         
             self.logsuffix = ''
             self.usbmiss = []
-            
-            self.boardconnection = True
-            ConnectControl(self)
-            time.sleep(5)
+
+            # get USB list then disconnect relay and ready for test start            
             self.usbinit = GetCurrentUSBTree(self)
             self.boardconnection = False       
             ConnectControl(self)
