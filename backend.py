@@ -93,6 +93,8 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         self.usbmiss = []
         self.logsuffix = ''
         
+        self.logfile = ''
+        
         self.refresh_gB()
         
     def setup_control(self):
@@ -195,7 +197,8 @@ class MainWindow_controller(QtWidgets.QMainWindow):
             self.manager, self.sdevice, self.config, self.capture_settings,\
             self.enabled_ch_i2c, self.enabled_ch_uart, self.enabled_ch_cc = Saleae_Setup(self)
 
-            self.updateSaleaeModel()
+            if self.manager:
+                self.updateSaleaeModel()
 
             self.timerInitBoard.start(10)
             self.ui.pB_exec.setText("Stop")
@@ -214,9 +217,12 @@ class MainWindow_controller(QtWidgets.QMainWindow):
             if self.counter_cycle < (self.ui.sB_cycle.value()):
                 if self.counter_cycle == 0:
                 
-                    # saleae capture start
-                    self.capture = Saleae_StartCapture(self)
-
+                    if self.manager:
+                        # saleae capture start
+                        self.capture = Saleae_StartCapture(self)
+                    else:
+                        self.logfile = Logger_StartCapture(self)
+                    
                 self.timerConnect.start(OneSecond*self.ui.sB_connect.value())
                 self.timerDisconnect.start(OneSecond*self.ui.sB_disconnect.value())
                 # check usb enumeration 1 second ahead of disconnection
@@ -224,9 +230,13 @@ class MainWindow_controller(QtWidgets.QMainWindow):
                                 
                 self.counter_cycle += 1
             else:
-                # cycle per run limit is reached. stop saleae recording and pack to a log file
-                Saleae_StopCapture(self)
-
+            
+                if self.manager:
+                    # cycle per run limit is reached. stop saleae recording and pack to a log file
+                    Saleae_StopCapture(self)
+                else:
+                    Logger_StopCapture(self)
+                
                 # restart for next run
                 self.counter_runs += 1
                 self.counter_cycle = 0
@@ -241,7 +251,10 @@ class MainWindow_controller(QtWidgets.QMainWindow):
             self.ui.gB_setupch.setEnabled(True)
             self.ui.gB_setupseq.setEnabled(True)
             
-            self.manager = Saleae_Close(self)
+            if self.manager:
+                self.manager = Saleae_Close(self)
+            else:
+                Logger_StopCapture(self)
 
     def BoardConnected(self):
         self.timerConnect.stop()
@@ -267,7 +280,11 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         if len(self.usbmiss):
             self.logsuffix += '_r' + str(self.counter_runs) + 'c' + str(self.counter_cycle) + '_'
             self.logsuffix +=  '_'.join(self.usbmiss)
-            print(self.logsuffix)
+
+        if not self.manager:
+            with open(self.logfile, 'a') as f:
+                print('R' + str(self.counter_runs) + 'C' + str(self.counter_cycle) + ' Missing: ', file=f, end="")
+                print(self.usbmiss, file=f)
 
     def on_sB_runs_valueChanged(self):
         self.ui.hSB_runs.setValue(self.ui.sB_runs.value())

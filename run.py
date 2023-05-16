@@ -150,6 +150,27 @@ def ConnectControl(self):
         self.board.digital_write(IO_OUTPUT_PIN22, self.boardconnection)
         self.board.digital_write(IO_OUTPUT_PIN24, self.boardconnection)
         self.board.digital_write(IO_OUTPUT_PIN26, self.boardconnection)
+
+def Logger_StartCapture(self):
+    # Store output in a timestamped directory
+    output_dir = os.path.join(os.getcwd(), f'{datetime.now().strftime("%Y_%m_%d")}')
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    
+    #output_dir = os.getcwd()
+    output_prefix = f'{datetime.now().strftime("%Y_%m_%d_%H_%M_%S")}'
+    
+    # Export analyzer data to a CSV file
+    analyzer_export_filepath = os.path.join(output_dir, output_prefix +'.txt')
+    
+    with open(analyzer_export_filepath, 'w') as f:
+        print('Start Devices', file=f)
+        print(self.usbinit, file=f)
+
+    return analyzer_export_filepath
+
+def Logger_StopCapture(self):
+    print('stop')
     
 def Saleae_StartCapture(self):
     manager = self.manager
@@ -270,32 +291,36 @@ def Saleae_Setup(self):
     enabled_ch_cc = [ch for ch in digital_ch_cc if ch < 16]    
     enabled_ch = enabled_ch_i2c + enabled_ch_uart + enabled_ch_cc
     
-    manager = automation.Manager.launch()
-    sdevice = manager.get_devices()
-    
-    if not len(sdevice):
-        demo_device = automation.DeviceDesc(device_id='F4241', device_type='Demo', is_simulation=True)
-        sdevice = [demo_device]
-    
-    if "Pro" in sdevice:
-        config = automation.LogicDeviceConfiguration(
-            enabled_digital_channels = enabled_ch,
-            digital_sample_rate = 6_250_000,
-            digital_threshold_volts = 1.2,
+    try:
+        manager = automation.Manager.launch()
+        sdevice = manager.get_devices()
+        
+        if not len(sdevice):
+            demo_device = automation.DeviceDesc(device_id='F4241', device_type='Demo', is_simulation=True)
+            sdevice = [demo_device]
+        
+        if "Pro" in sdevice:
+            config = automation.LogicDeviceConfiguration(
+                enabled_digital_channels = enabled_ch,
+                digital_sample_rate = 6_250_000,
+                digital_threshold_volts = 1.2,
+            )
+        else:
+            config = automation.LogicDeviceConfiguration(
+                enabled_digital_channels = enabled_ch,
+                digital_sample_rate = 5_000_000,
+            )
+        
+        
+        duration_seconds = (self.ui.sB_disconnect.value() + 1) * self.ui.sB_cycle.value()
+        capture_settings = automation.CaptureConfiguration(
+            capture_mode = automation.TimedCaptureMode(duration_seconds)
         )
-    else:
-        config = automation.LogicDeviceConfiguration(
-            enabled_digital_channels = enabled_ch,
-            digital_sample_rate = 5_000_000,
-        )
-    
-    
-    duration_seconds = (self.ui.sB_disconnect.value() + 1) * self.ui.sB_cycle.value()
-    capture_settings = automation.CaptureConfiguration(
-        capture_mode = automation.TimedCaptureMode(duration_seconds)
-    )
 
-    return manager, sdevice, config, capture_settings, enabled_ch_i2c, enabled_ch_uart, enabled_ch_cc
+        return manager, sdevice, config, capture_settings, enabled_ch_i2c, enabled_ch_uart, enabled_ch_cc
+
+    except: 
+        return 0, 0, 0, 0, 0, 0, 0
 
 def GetCurrentUSBTree(self):
     try:
