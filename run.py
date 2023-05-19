@@ -212,6 +212,10 @@ def Saleae_StopCapture(self):
             analyzer = capture.add_analyzer('HPI_I2CBurst', settings=settings)
         except:
             # use standard I2C analyzer if customised one is not installed
+            settings = {
+                'SDA': self.enabled_ch_i2c[i],
+                'SCL': self.enabled_ch_i2c[i+1]
+            }
             analyzer = capture.add_analyzer('I2C', settings=settings)
 
         analyzers.append(analyzer)
