@@ -2,13 +2,11 @@
 from saleae import automation
 from datetime import datetime
 
-import win32com.client
-import re
-
 import os
 import os.path
 import time
-    
+import psutil
+ 
 def Logger_StartCapture(self):
     # Store output in a timestamped directory
     output_dir = os.path.join(os.getcwd(), f'{datetime.now().strftime("%Y_%m_%d")}')
@@ -29,6 +27,13 @@ def Logger_StartCapture(self):
 
 def Logger_StopCapture(self):
     print('stop')
+
+def chk_SaleaeLogicRunning(self):
+    app_name = "Logic.exe"
+    for proc in psutil.process_iter(['name']):
+        if proc.info['name'].lower() == app_name.lower():
+            return True
+    return False
     
 def Saleae_StartCapture(self):
     manager = self.manager
@@ -118,23 +123,26 @@ def Saleae_Setup(self):
 
     enabled_ch_cc = [self.icc1, self.icc2]
 
-    if self.platform:               # INTEL 
+    if self.platform == 'INTEL':               # INTEL 
         enabled_ch = digital_ch_cc + digital_ch_intel
         enabled_ch_i2c = [self.rsda, self.rclk, self.bsda, self.bclk]
-    else:                           # AMD
+    elif self.platform == 'AMD':                # AMD
         enabled_ch = digital_ch_cc + digital_ch_amd
         enabled_ch_i2c = [self.asda, self.aclk, self.msda, self.mclk]
-    
+
     try:
-        manager = automation.Manager.launch()
+        hdr = getattr(automation.Manager, self.apistr)
+        manager = hdr()
+#        manager = automation.Manager.launch()
+
         sdevice = manager.get_devices()
 
         # for test only - start
         device_type = sdevice[0].device_type
         if str(device_type) != 'DeviceType.LOGIC_PRO_16' or str(device_type) != 'DeviceType.LOGIC_16':
-            enabled_ch = [0, 1, 2, 3, 4, 5, 6, 7]
-            enabled_ch_i2c = [0, 1, 2, 3]
-            enabled_ch_cc = [4, 5]
+            enabled_ch = [0, 1, 6, 7]
+            enabled_ch_i2c = [6, 7]
+            enabled_ch_cc = [0, 1]
         # for test only - end
         
         if not len(sdevice):
@@ -159,6 +167,5 @@ def Saleae_Setup(self):
         )
 
         return manager, sdevice, config, capture_settings, enabled_ch, enabled_ch_i2c, enabled_ch_cc
-
-    except: 
+    except:
         return 0, 0, 0, 0, 0, 0, 0
