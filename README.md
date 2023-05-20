@@ -31,21 +31,23 @@
 - Connect Saleae 16 / 16 Pro to PC (will enter Demo mode if no Saleae unit is attached)
 - Fill all information and platform type in Version Information
 - Mapping Saleae pins with pre-defined channel number, or change to preferred ones.
-- ***IMPORTANT*** CLOSE all running saleae logic2 applications
 - Exectue python command
   ```
   py main.py
   ```
 - Click "Run" button
 - This app will 
-  * Start log capturing per setup 
-  * Assign analysers to captured log after clicking "Stop"
-  * Create a folder using current time and save log filename with Version Information data
-  * Close Saleae application
+  1. Launch Saleae Logic application if it is not running. It will jump to step 2 if Saleae Logic is already running. 
+  2. Start log capturing per setup. 
+  3. Assign analysers to captured log after clicking "Stop".
+  4. Create a folder using current time and save log filename with Version Information data.
+  5. Close Saleae Logic application if it was launched by this script.
+  6. Ready for another capture cycle.
 
 ## Limitation
 
 - App might crash if PC doesn't install Saleae Logic2 application
+- App will crash if automation option is not enabled
 - Doesn't support Saleae 8ch
 
 ---
@@ -60,14 +62,13 @@
   pyuic5 ui.ui -o ui.py
   ```
 
-
 ---
 # Build Standalone Application
 
 ```
-nuitka --standalone --enable-plugin=pyqt5 --disable-console --onefile main.py
-```
-or 
-```
 pyinstaller -F --noconsole main.py
+```
+or
+```
+nuitka --standalone --enable-plugin=pyqt5 --disable-console --onefile main.py
 ```
