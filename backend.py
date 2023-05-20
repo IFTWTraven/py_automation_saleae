@@ -11,13 +11,17 @@ from datetime import datetime
 import os
 import os.path
 import time
-#import re
 
 class MainWindow_controller(QtWidgets.QMainWindow):
     def closeEvent(self, event):
         # if accendentically close app while running
         if self.is_running:
             self.on_timerStopCapture()
+    
+        if self.need_close_saleae_while_exit:
+            self.manager = Saleae_Close(self)
+            # only kill saleae if it was opened by this script
+            close_saleae_thread(self)
         
     def __init__(self):
         super().__init__() # in python3, super(Class, self).xxx = super().xxx
@@ -43,6 +47,7 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         
         self.is_running = False
         self.saleae_is_running = False
+        self.need_close_saleae_while_exit = False
         self.apistr = ""
 
         #saleae parameters
@@ -162,7 +167,13 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         if self.saleae_is_running:
             self.apistr = 'connect'         # run automation.Manager.connect()
         else:
-            self.apistr = 'launch'          # run automation.Manager.launch()
+            search_and_run_saleae(self)
+#            self.apistr = 'launch'          # run automation.Manager.launch()
+            self.apistr = 'connect'         # run automation.Manager.connect()
+            self.saleae_is_running = True
+
+#        if not self.saleae_is_running:                  # saleae is not running
+#            search_and_run_saleae(self)                 # execute saleae logic2 with --automation argument
             
         # init saleae
         self.manager, self.sdevice, self.config, self.capture_settings, \
@@ -174,10 +185,6 @@ class MainWindow_controller(QtWidgets.QMainWindow):
     def on_timerStopCapture(self):
         self.timerStopCapture.stop()
         Saleae_StopCapture(self)      
-        
-        if not self.saleae_is_running:
-            self.manager = Saleae_Close(self)
-        
         self.logsuffix = ''
         self.ui.pB_Run.setText("Run")
         self.ui.gB_Generic.setEnabled(True)

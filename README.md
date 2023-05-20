@@ -23,7 +23,7 @@
   ```
 - (Optional) Install CC analyser plugin “Manchester_PD_CC” (binary/manchester_analyzer.dll) (support Saleae Pro only)
 - (Optional) Install HPI I2C analyser plugin “HPI_I2CBurst” (binary/saleae_pd_analyser.dll)
-- ***IMPORTANT*** Enable “Automation Server” in SALEAE application UI: Preference-> Automation. (SALEAE software 2.4.0+ )
+- (Optional) Enable “Automation Server” in SALEAE application UI: Preference-> Automation. (SALEAE software 2.4.0+) 
   # ![automation](/docs/saleae_automation.png)
 
 ## How to use
@@ -37,17 +37,24 @@
   ```
 - Click "Run" button
 - This app will 
-  1. Launch Saleae Logic application if it is not running. It will jump to step 2 if Saleae Logic is already running. 
-  2. Start log capturing per setup. 
-  3. Assign analysers to captured log after clicking "Stop".
-  4. Create a folder using current time and save log filename with Version Information data.
-  5. Close Saleae Logic application if it was launched by this script.
-  6. Ready for another capture cycle.
+  - Scenario A: Saleae Logic applcation is not running
+    1. Launch Saleae Logic application with automation supportive.
+    2. Hit "Run" and start log capturing per setup. 
+    3. Assign analysers to captured log after clicking "Stop".
+    4. Create a folder using current time and save log filename with Version Information data.
+    5. Ready for another capture cycle.
+    6. Will shutdown Saleae Logic application while quit python app.
+  - Scenario B: Saleae Logic application is running
+    1. Hit "Run" and start log capturing per setup.
+    2. Assign analysers to captured log after clicking "Stop".
+    3. Create a folder using current time and save log filename with Version Information data.
+    4. Ready for another capture cycle.
+    5. Will ***NOT*** shutdown Saleae Logic application while quit
 
 ## Limitation
 
 - App might crash if PC doesn't install Saleae Logic2 application
-- App will crash if automation option is not enabled
+- App will crash if Saleae Logic applcation doesn't enable "Automation Server" at Scenario B.
 - Doesn't support Saleae 8ch
 
 ---

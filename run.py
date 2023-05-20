@@ -6,6 +6,30 @@ import os
 import os.path
 import time
 import psutil
+
+import subprocess
+
+def search_and_run_saleae(self):
+    app_args = ['--automation']    # List of directories to search in
+
+    program_files_path = os.environ.get('programw6432')
+    logic2_bin = os.path.join(program_files_path, 'Logic', 'Logic.exe')
+    process = subprocess.Popen([logic2_bin] + app_args)
+    self.need_close_saleae_while_exit = True
+    
+def close_saleae_thread(self):
+    # Provide the name of the application you want to close
+    app_name = 'Logic.exe'
+
+    # Iterate over all running processes
+    for proc in psutil.process_iter(['name']):
+        if proc.info['name'] == app_name:
+            proc.kill()
+#            print('Application terminated successfully.')
+            self.need_close_saleae_while_exit = False
+#            return
+
+#    print('Application not found or already terminated.')
  
 def Logger_StartCapture(self):
     # Store output in a timestamped directory
@@ -133,7 +157,7 @@ def Saleae_Setup(self):
     try:
         hdr = getattr(automation.Manager, self.apistr)
         manager = hdr()
-#        manager = automation.Manager.launch()
+#        manager = automation.Manager.connect()
 
         sdevice = manager.get_devices()
 
