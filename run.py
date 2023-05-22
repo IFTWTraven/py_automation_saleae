@@ -4,9 +4,9 @@ from datetime import datetime
 
 import os
 import os.path
+import sys
 import time
 import psutil
-
 import subprocess
 
 def search_and_run_saleae(self):
@@ -31,26 +31,34 @@ def close_saleae_thread(self):
 
 #    print('Application not found or already terminated.')
  
-def Logger_StartCapture(self):
+def Logger_CaptureSettings(self, log_name):
     # Store output in a timestamped directory
     output_dir = os.path.join(os.getcwd(), f'{datetime.now().strftime("%Y_%m_%d")}')
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    
-    #output_dir = os.getcwd()
-    output_prefix = f'{datetime.now().strftime("%Y_%m_%d_%H_%M_%S")}'
-    
-    # Export analyzer data to a CSV file
-    analyzer_export_filepath = os.path.join(output_dir, output_prefix +'.txt')
-    
-    with open(analyzer_export_filepath, 'w') as f:
-        print('Start Devices', file=f)
-        print(self.usbinit, file=f)
+    logfile = os.path.join(output_dir, f'{datetime.now().strftime("%Y_%m_%d")}' + '.txt')
 
-    return analyzer_export_filepath
+    if os.path.exists(logfile):
+        oper = 'a'
+    else:
+        oper = 'w'
+    
+    with open(logfile, oper) as f:
+        sys.stdout = f
+        print(log_name)
 
-def Logger_StopCapture(self):
-    print('stop')
+        if self.platform == 'INTEL':               # INTEL 
+            print(' CC1:', self.icc1, '\tRIDGE INT:', self.rint, '\tBBR PWR:', self.bpwr)
+            print(' CC2:', self.icc2, '\tRIDGE SDA:', self.rsda, '\tBBR RST:', self.brst)
+            print('SBU1:', self.isbu1, '\tRIDGE CLK:', self.rclk, '\tBBR SDA:', self.bsda)
+            print('SBU2:', self.isbu2, '\t\t\t\t\tBBR CLK:', self.bclk)
+            print('VBUS:', self.ivbus)
+        elif self.platform == 'AMD':                # AMD
+            print(' CC1:', self.icc1, '\t  APU INT:', self.aint, '\tMUX PWR:', self.mpwr)
+            print(' CC2:', self.icc2, '\t  APU RST:', self.arst, '\tMUX RST:', self.mrst)
+            print('SBU1:', self.isbu1, '\t  APU SDA:', self.asda, '\tMUX SDA:', self.msda)
+            print('SBU2:', self.isbu2, '\t  APU CLK:', self.aclk, '\tMUX CLK:', self.mclk)
+            print('VBUS:', self.ivbus, '\t      HPD:', self.ahpd)
+        print('')
+        sys.stdout = sys.__stdout__
 
 def chk_SaleaeLogicRunning(self):
     app_name = "Logic.exe"
@@ -128,6 +136,8 @@ def Saleae_StopCapture(self):
     # Finally, save the capture to a file
     capture_filepath = os.path.join(output_dir, output_prefix + '.sal')
     capture.save_capture(filepath=capture_filepath)
+
+    Logger_CaptureSettings(self, output_prefix + '.sal')
     
     # close captured session to release memory consumption
     capture.close()
@@ -160,30 +170,30 @@ def Saleae_Setup(self):
 #        manager = automation.Manager.connect()
 
         sdevice = manager.get_devices()
-
-        # for test only - start
         device_type = sdevice[0].device_type
-        if str(device_type) != 'DeviceType.LOGIC_PRO_16' or str(device_type) != 'DeviceType.LOGIC_16':
-            enabled_ch = [0, 1, 6, 7]
-            enabled_ch_i2c = [6, 7]
-            enabled_ch_cc = [0, 1]
-        # for test only - end
-        
+
         if not len(sdevice):
             demo_device = automation.DeviceDesc(device_id='F4241', device_type='Demo', is_simulation=True)
             sdevice = [demo_device]
-        
-        if "Pro" in sdevice:
-            config = automation.LogicDeviceConfiguration(
-                enabled_digital_channels = enabled_ch,
-                digital_sample_rate = 6_250_000,
-                digital_threshold_volts = 1.2,
-            )
         else:
-            config = automation.LogicDeviceConfiguration(
-                enabled_digital_channels = enabled_ch,
-                digital_sample_rate = 5_000_000,
-            )
+            # attached saleae is 8ch, fixed ch setting for test only
+            if str(device_type) != 'DeviceType.LOGIC_PRO_16' and str(device_type) != 'DeviceType.LOGIC_16':
+                enabled_ch = [0, 1, 6, 7]
+                enabled_ch_i2c = [6, 7]
+                enabled_ch_cc = [0, 1]
+            
+            # only Pro skus support 1.2V
+            if "Pro" in sdevice:
+                config = automation.LogicDeviceConfiguration(
+                    enabled_digital_channels = enabled_ch,
+                    digital_sample_rate = 6_250_000,
+                    digital_threshold_volts = 1.2,
+                )
+            else:
+                config = automation.LogicDeviceConfiguration(
+                    enabled_digital_channels = enabled_ch,
+                    digital_sample_rate = 5_000_000,
+                )
         
         duration_seconds = 1200     # need a number for timer capture mode
         capture_settings = automation.CaptureConfiguration(
