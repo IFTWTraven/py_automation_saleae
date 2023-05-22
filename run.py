@@ -26,7 +26,7 @@ def Logger_CaptureSettings(self, log_name):
             print(' CC1:', self.icc1, '\tRIDGE INT:', self.rint, '\tBBR PWR:', self.bpwr)
             print(' CC2:', self.icc2, '\tRIDGE SDA:', self.rsda, '\tBBR RST:', self.brst)
             print('SBU1:', self.isbu1, '\tRIDGE CLK:', self.rclk, '\tBBR SDA:', self.bsda)
-            print('SBU2:', self.isbu2, '\t\t\t\t\tBBR CLK:', self.bclk)
+            print('SBU2:', self.isbu2, '\t  BBR CLK:', self.bclk)
             print('VBUS:', self.ivbus)
         elif self.platform == 'AMD':                # AMD
             print(' CC1:', self.icc1, '\t  APU INT:', self.aint, '\tMUX PWR:', self.mpwr)
