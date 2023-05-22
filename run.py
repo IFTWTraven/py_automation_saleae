@@ -7,11 +7,34 @@ import os.path
 import sys
 import time
 import psutil
+import subprocess
+
+def search_and_run_saleae(self):
+    app_args = ['--automation']    # List of directories to search in
+
+    program_files_path = os.environ.get('programw6432')
+    logic2_bin = os.path.join(program_files_path, 'Logic', 'Logic.exe')
+    process = subprocess.Popen([logic2_bin] + app_args)
+    self.need_close_saleae_while_exit = True
+    
+def close_saleae_thread(self):
+    # Provide the name of the application you want to close
+    app_name = 'Logic.exe'
+
+    # Iterate over all running processes
+    for proc in psutil.process_iter(['name']):
+        if proc.info['name'] == app_name:
+            proc.kill()
+#            print('Application terminated successfully.')
+            self.need_close_saleae_while_exit = False
+#            return
+
+#    print('Application not found or already terminated.')
  
 def Logger_CaptureSettings(self, log_name):
     # Store output in a timestamped directory
     output_dir = os.path.join(os.getcwd(), f'{datetime.now().strftime("%Y_%m_%d")}')
-    logfile = os.path.join(output_dir, '00_logSettings.txt')
+    logfile = os.path.join(output_dir, f'{datetime.now().strftime("%Y_%m_%d")}' + '.txt')
 
     if os.path.exists(logfile):
         oper = 'a'
@@ -26,7 +49,7 @@ def Logger_CaptureSettings(self, log_name):
             print(' CC1:', self.icc1, '\tRIDGE INT:', self.rint, '\tBBR PWR:', self.bpwr)
             print(' CC2:', self.icc2, '\tRIDGE SDA:', self.rsda, '\tBBR RST:', self.brst)
             print('SBU1:', self.isbu1, '\tRIDGE CLK:', self.rclk, '\tBBR SDA:', self.bsda)
-            print('SBU2:', self.isbu2, '\t  BBR CLK:', self.bclk)
+            print('SBU2:', self.isbu2, '\t\t\t\t\tBBR CLK:', self.bclk)
             print('VBUS:', self.ivbus)
         elif self.platform == 'AMD':                # AMD
             print(' CC1:', self.icc1, '\t  APU INT:', self.aint, '\tMUX PWR:', self.mpwr)
@@ -114,7 +137,7 @@ def Saleae_StopCapture(self):
     capture_filepath = os.path.join(output_dir, output_prefix + '.sal')
     capture.save_capture(filepath=capture_filepath)
 
-    Logger_CaptureSettings(self, output_prefix + 'sal')
+    Logger_CaptureSettings(self, output_prefix + '.sal')
     
     # close captured session to release memory consumption
     capture.close()
@@ -144,11 +167,9 @@ def Saleae_Setup(self):
     try:
         hdr = getattr(automation.Manager, self.apistr)
         manager = hdr()
-#        manager = automation.Manager.launch()
+#        manager = automation.Manager.connect()
 
         sdevice = manager.get_devices()
-
-        # for test only - start
         device_type = sdevice[0].device_type
 
         if not len(sdevice):
