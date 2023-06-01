@@ -10,6 +10,18 @@
     <height>600</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
   <property name="font">
    <font>
     <family>Calibri</family>
@@ -17,7 +29,12 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Infineon HOST PD Logger v1.0</string>
+   <string>IFTW PD Logger v1.1</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normalon>:/img/docs/IFX_logo.ico</normalon>
+   </iconset>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -2642,7 +2659,41 @@
     <string>Run</string>
    </property>
   </widget>
+  <widget class="QLabel" name="label_logo">
+   <property name="geometry">
+    <rect>
+     <x>670</x>
+     <y>230</y>
+     <width>101</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap resource="ui_rc.qrc">:/img/docs/IFX_logo.png</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="chkB_analog">
+   <property name="geometry">
+    <rect>
+     <x>670</x>
+     <y>140</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Analog Mode</string>
+   </property>
+  </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="ui_rc.qrc"/>
+ </resources>
  <connections/>
 </ui>

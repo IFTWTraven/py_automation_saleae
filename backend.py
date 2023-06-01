@@ -19,10 +19,13 @@ class MainWindow_controller(QtWidgets.QMainWindow):
             self.on_timerStopCapture()
     
         if self.need_close_saleae_while_exit:
-            self.manager = Saleae_Close(self)
-            # only kill saleae if it was opened by this script
-            close_saleae_thread(self)
-        
+            try:
+                self.manager = Saleae_Close(self)
+                # only kill saleae if it was opened by this script
+                close_saleae_thread(self)
+            except:
+                pass
+
     def __init__(self):
         super().__init__() # in python3, super(Class, self).xxx = super().xxx
         self.ui = Ui_Dg_Main()
@@ -69,13 +72,16 @@ class MainWindow_controller(QtWidgets.QMainWindow):
             hdr = getattr(self.ui, element_name)
             hdr.textChanged.connect(self.on_stateChanged)
         
+        self.ui.chkB_analog.stateChanged.connect(self.on_stateChanged)
         self.ui.pB_Run.clicked.connect(self.on_pB_Run)
 
         self.timerStartCapture = QTimer()
         self.timerStartCapture.timeout.connect(self.on_timerStartCapture)
         self.timerStopCapture = QTimer()
         self.timerStopCapture.timeout.connect(self.on_timerStopCapture)
-        
+        self.timerSaveCapture = QTimer()
+        self.timerSaveCapture.timeout.connect(self.on_timerSaveCapture)
+
     def on_stateChanged(self):
         self.ui.gB_INTEL.setEnabled(self.ui.cB_Platform.currentIndex())
         self.ui.gB_AMD.setEnabled(not self.ui.cB_Platform.currentIndex())
@@ -136,6 +142,8 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         self.ticket = self.ui.lineE_Ticket.text()
         self.project = self.ui.lineE_Project.text()
 
+        self.analog = self.ui.chkB_analog.isChecked()
+
     def on_pB_Run(self):
         self.is_running = not self.is_running
 
@@ -153,6 +161,7 @@ class MainWindow_controller(QtWidgets.QMainWindow):
             self.ui.gB_Generic.setEnabled(False)
             self.ui.gB_AMD.setEnabled(False)
             self.ui.gB_INTEL.setEnabled(False)
+            self.ui.chkB_analog.setEnabled(False)
 
             self.timerStartCapture.start(10)
         else:
@@ -184,9 +193,17 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         
     def on_timerStopCapture(self):
         self.timerStopCapture.stop()
+        self.ui.pB_Run.setText("Saving...")
+        self.ui.pB_Run.setEnabled(False)
+        self.timerSaveCapture.start(10)
+
+    def on_timerSaveCapture(self):
+        self.timerSaveCapture.stop()
         Saleae_StopCapture(self)      
         self.logsuffix = ''
         self.ui.pB_Run.setText("Run")
+        self.ui.pB_Run.setEnabled(True)
         self.ui.gB_Generic.setEnabled(True)
         self.ui.gB_INTEL.setEnabled(self.ui.cB_Platform.currentIndex())
         self.ui.gB_AMD.setEnabled(not self.ui.cB_Platform.currentIndex())
+        self.ui.chkB_analog.setEnabled(True)

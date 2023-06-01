@@ -6,10 +6,11 @@
 
 ## Code members
 
-- main.py: main entry
-- ui.py: created via QT Designer and contains all UI objects
-- backend.py: automation flow control
-- run.py: Saleae Logic2 application
+- `main.py`: main entry
+- `ui.py`: created via QT Designer and contains all UI objects
+- `backend.py`: automation flow control
+- `run.py`: Saleae Logic2 application
+- `ui_rc.py`: resources 
 
 ## Pre-requisite
 
@@ -31,13 +32,14 @@
 - Connect Saleae 16 / 16 Pro to PC (will enter Demo mode if no Saleae unit is attached)
 - Fill all information and platform type in Version Information
 - Mapping Saleae pins with pre-defined channel number, or change to preferred ones.
+- Enable "Analog Mode" will add analogue traces on CC/SBU/VBUS/OWER/RESET pins and ends up a huge size log file. Use it only when it is necessary.
 - Exectue python command
   ```
   py main.py
   ```
 - Click "Run" button
 - This app will 
-  - Scenario A: Saleae Logic applcation is not running
+  - Scenario A: Saleae Logic applcation is not running (***recommended***)
     1. Launch Saleae Logic application with automation supportive.
     2. Hit "Run" and start log capturing per setup. 
     3. Assign analysers to captured log after clicking "Stop".
@@ -49,13 +51,14 @@
     2. Assign analysers to captured log after clicking "Stop".
     3. Create a folder using current time and save log filename with Version Information data.
     4. Ready for another capture cycle.
-    5. Will ***NOT*** shutdown Saleae Logic application while quit
+    5. Will NOT shutdown Saleae Logic application while quit
 
 ## Limitation
 
-- App might crash if PC doesn't install Saleae Logic2 application
+- App might crash if PC doesn't install Saleae Logic2 application.
+- App might halt if close SALEAE Logic2 application during log collecting.
 - App will crash if Saleae Logic applcation doesn't enable "Automation Server" at Scenario B.
-- Doesn't support Saleae 8ch
+- Doesn't support Saleae 8ch.
 
 ---
 # Build UI
@@ -66,16 +69,14 @@
   # ![QT Designer](/docs/qt_designer.png)
 - translate to python script:
   ```
+  pyrcc5 ui_rc.qrc -o ui_rc.py
   pyuic5 ui.ui -o ui.py
+  pyuic5 logo.ui -o logo.py
   ```
 
 ---
 # Build Standalone Application
 
 ```
-pyinstaller -F --noconsole main.py
-```
-or
-```
-nuitka --standalone --enable-plugin=pyqt5 --disable-console --onefile main.py
+pyinstaller -F --noconsole main.py -i docs/IFX_Logo.ico --name main_auto_logger.exe
 ```

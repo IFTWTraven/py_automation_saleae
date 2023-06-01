@@ -15,10 +15,15 @@ class Ui_Dg_Main(object):
     def setupUi(self, Dg_Main):
         Dg_Main.setObjectName("Dg_Main")
         Dg_Main.resize(800, 600)
+        Dg_Main.setMinimumSize(QtCore.QSize(800, 600))
+        Dg_Main.setMaximumSize(QtCore.QSize(800, 600))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(10)
         Dg_Main.setFont(font)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/img/docs/IFX_logo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        Dg_Main.setWindowIcon(icon)
         Dg_Main.setStyleSheet("")
         self.gB_INTEL = QtWidgets.QGroupBox(Dg_Main)
         self.gB_INTEL.setEnabled(False)
@@ -588,6 +593,15 @@ class Ui_Dg_Main(object):
         self.pB_Run.setEnabled(False)
         self.pB_Run.setGeometry(QtCore.QRect(670, 25, 101, 111))
         self.pB_Run.setObjectName("pB_Run")
+        self.label_logo = QtWidgets.QLabel(Dg_Main)
+        self.label_logo.setGeometry(QtCore.QRect(670, 230, 101, 61))
+        self.label_logo.setText("")
+        self.label_logo.setPixmap(QtGui.QPixmap(":/img/docs/IFX_logo.png"))
+        self.label_logo.setScaledContents(True)
+        self.label_logo.setObjectName("label_logo")
+        self.chkB_analog = QtWidgets.QCheckBox(Dg_Main)
+        self.chkB_analog.setGeometry(QtCore.QRect(670, 140, 101, 31))
+        self.chkB_analog.setObjectName("chkB_analog")
 
         self.retranslateUi(Dg_Main)
         self.cB_RINT.setCurrentIndex(5)
@@ -614,7 +628,7 @@ class Ui_Dg_Main(object):
 
     def retranslateUi(self, Dg_Main):
         _translate = QtCore.QCoreApplication.translate
-        Dg_Main.setWindowTitle(_translate("Dg_Main", "Infineon HOST PD Logger v1.0"))
+        Dg_Main.setWindowTitle(_translate("Dg_Main", "IFTW PD Logger v1.1"))
         self.gB_INTEL.setTitle(_translate("Dg_Main", "Hardware Signals (INTEL)"))
         self.gB_Ridge.setTitle(_translate("Dg_Main", "Ridge to PD"))
         self.cB_RINT.setItemText(0, _translate("Dg_Main", "0"))
@@ -991,3 +1005,5 @@ class Ui_Dg_Main(object):
         self.cB_Platform.setItemText(0, _translate("Dg_Main", "AMD"))
         self.cB_Platform.setItemText(1, _translate("Dg_Main", "INTEL"))
         self.pB_Run.setText(_translate("Dg_Main", "Run"))
+        self.chkB_analog.setText(_translate("Dg_Main", "Analog Mode"))
+import ui_rc

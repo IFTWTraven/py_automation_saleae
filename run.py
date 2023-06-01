@@ -34,7 +34,7 @@ def close_saleae_thread(self):
 def Logger_CaptureSettings(self, log_name):
     # Store output in a timestamped directory
     output_dir = os.path.join(os.getcwd(), f'{datetime.now().strftime("%Y_%m_%d")}')
-    logfile = os.path.join(output_dir, f'{datetime.now().strftime("%Y_%m_%d")}' + '.txt')
+    logfile = os.path.join(output_dir, f'{datetime.now().strftime("%Y%m%d")}' + '.txt')
 
     if os.path.exists(logfile):
         oper = 'a'
@@ -104,7 +104,7 @@ def Saleae_StopCapture(self):
         }
 
         try:
-            analyzer = capture.add_analyzer('HPI_I2CBurst', settings=settings)
+            analyzer = capture.add_analyzer('I2C_HPI', settings=settings)
         except:
             # use standard I2C analyzer if customised one is not installed
             settings = {
@@ -155,15 +155,21 @@ def Saleae_Setup(self):
     digital_ch_amd = [self.aint, self.arst, self.asda, self.aclk, self.ahpd, self.mpwr, self.mrst, self.msda, self.mclk]
     digital_ch_intel = [self.rint, self.rsda, self.rclk, self.bpwr, self.brst, self.bsda, self.bclk]
 
+    analog_ch_cc = [self.icc1, self.icc2, self.isbu1, self.isbu2, self.ivbus]
+    analog_ch_amd = [self.mpwr, self.mrst]
+    analog_ch_intel = [self.bpwr, self.brst]
+
     enabled_ch_cc = [self.icc1, self.icc2]
 
     if self.platform == 'INTEL':               # INTEL 
         enabled_ch = digital_ch_cc + digital_ch_intel
         enabled_ch_i2c = [self.rsda, self.rclk, self.bsda, self.bclk]
+        enabled_analog_ch = analog_ch_cc + analog_ch_intel
     elif self.platform == 'AMD':                # AMD
         enabled_ch = digital_ch_cc + digital_ch_amd
         enabled_ch_i2c = [self.asda, self.aclk, self.msda, self.mclk]
-
+        enabled_analog_ch = analog_ch_cc + analog_ch_amd
+        
     try:
         hdr = getattr(automation.Manager, self.apistr)
         manager = hdr()
@@ -182,18 +188,36 @@ def Saleae_Setup(self):
                 enabled_ch_i2c = [6, 7]
                 enabled_ch_cc = [0, 1]
             
-            # only Pro skus support 1.2V
-            if "Pro" in sdevice:
-                config = automation.LogicDeviceConfiguration(
-                    enabled_digital_channels = enabled_ch,
-                    digital_sample_rate = 6_250_000,
-                    digital_threshold_volts = 1.2,
-                )
+            if (self.analog):
+                # only Pro skus support 1.2V
+                if "Pro" in sdevice:
+                    config = automation.LogicDeviceConfiguration(
+                        enabled_digital_channels = enabled_ch,
+                        enabled_analog_channels = enabled_analog_ch,
+                        digital_sample_rate = 6_250_000,
+                        digital_threshold_volts = 1.2,
+                        analog_sample_rate = 1_562_500
+                    )
+                else:
+                    config = automation.LogicDeviceConfiguration(
+                        enabled_digital_channels = enabled_ch,
+                        enabled_analog_channels = enabled_analog_ch,
+                        digital_sample_rate = 6_250_000,
+                        analog_sample_rate = 1_562_500
+                    )
             else:
-                config = automation.LogicDeviceConfiguration(
-                    enabled_digital_channels = enabled_ch,
-                    digital_sample_rate = 5_000_000,
-                )
+                # only Pro skus support 1.2V
+                if "Pro" in sdevice:
+                    config = automation.LogicDeviceConfiguration(
+                        enabled_digital_channels = enabled_ch,
+                        digital_sample_rate = 6_250_000,
+                        digital_threshold_volts = 1.2,
+                    )
+                else:
+                    config = automation.LogicDeviceConfiguration(
+                        enabled_digital_channels = enabled_ch,
+                        digital_sample_rate = 5_000_000,
+                    )
         
         duration_seconds = 1200     # need a number for timer capture mode
         capture_settings = automation.CaptureConfiguration(
