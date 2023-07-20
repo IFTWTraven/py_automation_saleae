@@ -26,7 +26,7 @@
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap resource="ui_rc.qrc">:/img/docs/background.png</pixmap>
+    <pixmap resource="ui.qrc">:/img/docs/background.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>false</bool>
@@ -34,7 +34,7 @@
   </widget>
  </widget>
  <resources>
-  <include location="ui_rc.qrc"/>
+  <include location="ui.qrc"/>
  </resources>
  <connections/>
 </ui>

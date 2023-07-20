@@ -8,6 +8,7 @@ import sys
 import time
 import psutil
 import subprocess
+import openpyxl
 
 def search_and_run_saleae(self):
     app_args = ['--automation']    # List of directories to search in
@@ -33,7 +34,7 @@ def close_saleae_thread(self):
  
 def Logger_CaptureSettings(self, log_name):
     # Store output in a timestamped directory
-    output_dir = os.path.join(os.getcwd(), f'{datetime.now().strftime("%Y_%m_%d")}')
+    output_dir = os.path.join(os.getcwd(), f'{datetime.now().strftime("%Y%m%d")}')
     logfile = os.path.join(output_dir, f'{datetime.now().strftime("%Y%m%d")}' + '.txt')
 
     if os.path.exists(logfile):
@@ -50,13 +51,21 @@ def Logger_CaptureSettings(self, log_name):
             print(' CC2:', self.icc2, '\tRIDGE SDA:', self.rsda, '\tBBR RST:', self.brst)
             print('SBU1:', self.isbu1, '\tRIDGE CLK:', self.rclk, '\tBBR SDA:', self.bsda)
             print('SBU2:', self.isbu2, '\t\t\t\t\tBBR CLK:', self.bclk)
-            print('VBUS:', self.ivbus)
+            print('VBUS:', self.ivbus),
+            print(' INT:', self.ecint),
+            print(' SDA:', self.ecsda),
+            print(' CLK:', self.ecclk),
+            print('UART:', self.pduart)
         elif self.platform == 'AMD':                # AMD
             print(' CC1:', self.icc1, '\t  APU INT:', self.aint, '\tMUX PWR:', self.mpwr)
-            print(' CC2:', self.icc2, '\t  APU RST:', self.arst, '\tMUX RST:', self.mrst)
-            print('SBU1:', self.isbu1, '\t  APU SDA:', self.asda, '\tMUX SDA:', self.msda)
-            print('SBU2:', self.isbu2, '\t  APU CLK:', self.aclk, '\tMUX CLK:', self.mclk)
-            print('VBUS:', self.ivbus, '\t      HPD:', self.ahpd)
+            print(' CC2:', self.icc2, '\t  APU RST:', self.arst, '\tMUX SDA:', self.msda)
+            print('SBU1:', self.isbu1, '\t  APU SDA:', self.asda, '\tMUX CLK:', self.mclk)
+            print('SBU2:', self.isbu2, '\t  APU CLK:', self.aclk)
+            print('VBUS:', self.ivbus)
+            print(' INT:', self.ecint),
+            print(' SDA:', self.ecsda),
+            print(' CLK:', self.ecclk),
+            print('UART:', self.pduart)
         print('')
         sys.stdout = sys.__stdout__
 
@@ -78,12 +87,14 @@ def Saleae_StartCapture(self):
             
     return capture
 
-def Saleae_StopCapture(self):
-    capture = self.capture
-    capture.stop()
+def SaveToFile(self):
+    currentdate = datetime.now().strftime("%Y%m%d")  # Format the current date as desired
+    precisetime = datetime.now().strftime("%Y%m%d_%H%M%S")
+    sheetname = precisetime
     
+    capture = self.capture
     # Store output in a timestamped directory
-    output_dir = os.path.join(os.getcwd(), f'{datetime.now().strftime("%Y_%m_%d")}')
+    output_dir = os.path.join(os.getcwd(), f'{currentdate}')
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     
@@ -138,9 +149,79 @@ def Saleae_StopCapture(self):
     capture.save_capture(filepath=capture_filepath)
 
     Logger_CaptureSettings(self, output_prefix + '.sal')
+
+#    self.allrecords += output_prefix + '.sal\r\n'
+    trackerformhdr = currentdate + '_' + self.project + '.xlsx'
+    tracker_filepath = os.path.join(output_dir, trackerformhdr)
     
+    # a tracker form with same project name is already existed
+    if os.path.exists(tracker_filepath):
+        # Load the workbook
+        workbook = openpyxl.load_workbook(tracker_filepath)      
+
+        # we are in a new case log collecting process. the self.sheetname will be cleared if any change at information
+        if self.sheetname == '':
+            # Select the sheet you want to duplicate
+            original_sheet = workbook['Blank']
+            self.allrecords = output_prefix + '.sal\r\n'
+            # Create a new sheet
+            new_sheet = workbook.copy_worksheet(original_sheet)
+            # Rename the new sheet using the current date
+            new_sheet.title = sheetname
+            self.sheetname = sheetname
+        # we are in the same case process
+        else:
+            new_sheet = workbook[self.sheetname]
+            self.allrecords += output_prefix + '.sal\r\n'
+            
+    # tracker form doesn't exist
+    else:
+        self.allrecords = output_prefix + '.sal\r\n'
+       # Load the workbook
+        workbook = openpyxl.load_workbook('tracker_form.xlsx')
+        # Select the sheet you want to duplicate
+        original_sheet = workbook['Blank']
+        # Create a new sheet
+        new_sheet = workbook.copy_worksheet(original_sheet)
+        # Rename the new sheet using the current date
+        new_sheet.title = sheetname
+        self.sheetname = sheetname
+
+    if self.otherportsel:
+        additionalInfo = '\r\nSame failure on other port(s)'
+    else:
+        additionalInfo = '\r\nNot see the same symptom on other port(s)'
+
+    # Update cells value
+    new_sheet['B1'] = self.project
+    new_sheet['B2'] = self.ecver
+    new_sheet['B3'] = self.pdver
+    new_sheet['B4'] = self.ticket
+    new_sheet['B5'] = self.port + additionalInfo
+    new_sheet['B6'] = self.issue
+    new_sheet['B7'] = self.failrate
+    new_sheet['B8'] = self.device
+    new_sheet['B9'] = self.replication
+    new_sheet['B10'] = self.ui.cB_OtherDevSel.currentText() + '\r\n' + self.otherdev
+    new_sheet['B11'] = self.recovery
+    new_sheet['B12'] = self.ui.cB_DiffStepSel.currentText() + '\r\n' + self.diffstep
+    new_sheet['B13'] = self.allrecords
+    new_sheet['B14'] = 'as above'
+    new_sheet['B15'] = 'n/a'
+        
+    workbook.active = workbook.index(workbook[self.sheetname])
+    # Save the changes
+    workbook.save(tracker_filepath)
+    
+def Saleae_StopCapture(self):
+    capture = self.capture
+    capture.stop()
+
+    if self.savetofile:
+        SaveToFile(self)
+
     # close captured session to release memory consumption
-    capture.close()
+    capture.close()    
 
 def Saleae_Close(self):
     manager = self.manager
@@ -151,25 +232,26 @@ def Saleae_Close(self):
        
 def Saleae_Setup(self):
 
-    digital_ch_cc = [self.icc1, self.icc2, self.isbu1, self.isbu2, self.ivbus]
-    digital_ch_amd = [self.aint, self.arst, self.asda, self.aclk, self.ahpd, self.mpwr, self.mrst, self.msda, self.mclk]
+    digital_ch_cc = [self.icc1, self.icc2, self.isbu1, self.isbu2, self.ivbus, self.ecint, self.ecsda, self.ecclk, self.pduart]
+    digital_ch_amd = [self.aint, self.arst, self.asda, self.aclk, self.mpwr, self.msda, self.mclk]
     digital_ch_intel = [self.rint, self.rsda, self.rclk, self.bpwr, self.brst, self.bsda, self.bclk]
 
     analog_ch_cc = [self.icc1, self.icc2, self.isbu1, self.isbu2, self.ivbus]
-    analog_ch_amd = [self.mpwr, self.mrst]
-    analog_ch_intel = [self.bpwr, self.brst]
+#    analog_ch_amd = [self.mpwr, self.mrst]
+#    analog_ch_intel = [self.bpwr, self.brst]
 
     enabled_ch_cc = [self.icc1, self.icc2]
+    enabled_analog_ch = analog_ch_cc
 
-    if self.platform == 'INTEL':               # INTEL 
+    if self.platform == 'INTEL':                                        # INTEL 
         enabled_ch = digital_ch_cc + digital_ch_intel
         enabled_ch_i2c = [self.rsda, self.rclk, self.bsda, self.bclk]
-        enabled_analog_ch = analog_ch_cc + analog_ch_intel
-    elif self.platform == 'AMD':                # AMD
+#        enabled_analog_ch = analog_ch_cc + analog_ch_intel
+    elif self.platform == 'AMD':                                        # AMD
         enabled_ch = digital_ch_cc + digital_ch_amd
         enabled_ch_i2c = [self.asda, self.aclk, self.msda, self.mclk]
-        enabled_analog_ch = analog_ch_cc + analog_ch_amd
-        
+#        enabled_analog_ch = analog_ch_cc + analog_ch_amd
+    
     try:
         hdr = getattr(automation.Manager, self.apistr)
         manager = hdr()
@@ -188,37 +270,28 @@ def Saleae_Setup(self):
                 enabled_ch_i2c = [6, 7]
                 enabled_ch_cc = [0, 1]
             
-            if (self.analog):
-                # only Pro skus support 1.2V
-                if "Pro" in sdevice:
-                    config = automation.LogicDeviceConfiguration(
-                        enabled_digital_channels = enabled_ch,
-                        enabled_analog_channels = enabled_analog_ch,
-                        digital_sample_rate = 6_250_000,
-                        digital_threshold_volts = 1.2,
-                        analog_sample_rate = 1_562_500
-                    )
-                else:
-                    config = automation.LogicDeviceConfiguration(
-                        enabled_digital_channels = enabled_ch,
-                        enabled_analog_channels = enabled_analog_ch,
-                        digital_sample_rate = 6_250_000,
-                        analog_sample_rate = 1_562_500
-                    )
+            if (self.HighRes):
+                analogue_rate_setting = 1_562_500
             else:
-                # only Pro skus support 1.2V
-                if "Pro" in sdevice:
-                    config = automation.LogicDeviceConfiguration(
-                        enabled_digital_channels = enabled_ch,
-                        digital_sample_rate = 6_250_000,
-                        digital_threshold_volts = 1.2,
-                    )
-                else:
-                    config = automation.LogicDeviceConfiguration(
-                        enabled_digital_channels = enabled_ch,
-                        digital_sample_rate = 5_000_000,
-                    )
-        
+                analogue_rate_setting = 781_250
+                
+            # only Pro skus support 1.2V
+            if "Pro" in sdevice:
+                config = automation.LogicDeviceConfiguration(
+                    enabled_digital_channels = enabled_ch,
+                    enabled_analog_channels = enabled_analog_ch,
+                    digital_sample_rate = 6_250_000,
+                    digital_threshold_volts = 1.2,
+                    analog_sample_rate = analogue_rate_setting
+                )
+            else:
+                config = automation.LogicDeviceConfiguration(
+                    enabled_digital_channels = enabled_ch,
+                    enabled_analog_channels = enabled_analog_ch,
+                    digital_sample_rate = 6_250_000,
+                    analog_sample_rate = analogue_rate_setting
+                )
+       
         duration_seconds = 1200     # need a number for timer capture mode
         capture_settings = automation.CaptureConfiguration(
             capture_mode = automation.TimedCaptureMode(duration_seconds)

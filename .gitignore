@@ -1,6 +1,6 @@
 !*.dll
 !*.bat
-!.exe
+!*.exe
 
 __pycache__
 20*

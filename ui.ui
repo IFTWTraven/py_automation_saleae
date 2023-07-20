@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1024</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>800</width>
-    <height>600</height>
+    <width>1024</width>
+    <height>768</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>800</width>
-    <height>600</height>
+    <width>1024</width>
+    <height>768</height>
    </size>
   </property>
   <property name="font">
@@ -32,27 +32,26 @@
    <string>IFTW PD Logger v1.1</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normalon>:/img/docs/IFX_logo.ico</normalon>
-   </iconset>
+   <iconset resource="ui.qrc">
+    <normaloff>:/img/docs/IFX_logo.ico</normaloff>:/img/docs/IFX_logo.ico</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
   </property>
   <widget class="QGroupBox" name="gB_INTEL">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="geometry">
     <rect>
-     <x>410</x>
-     <y>310</y>
+     <x>400</x>
+     <y>470</y>
      <width>361</width>
-     <height>231</height>
+     <height>271</height>
     </rect>
    </property>
    <property name="title">
-    <string>Hardware Signals (INTEL)</string>
+    <string>INTEL Platform</string>
    </property>
    <widget class="QGroupBox" name="gB_Ridge">
     <property name="geometry">
@@ -60,11 +59,11 @@
       <x>20</x>
       <y>20</y>
       <width>151</width>
-      <height>191</height>
+      <height>151</height>
      </rect>
     </property>
     <property name="title">
-     <string>Ridge to PD</string>
+     <string>PD to Ridge</string>
     </property>
     <widget class="QComboBox" name="cB_RINT">
      <property name="geometry">
@@ -76,7 +75,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>5</number>
+      <number>9</number>
      </property>
      <property name="maxVisibleItems">
       <number>16</number>
@@ -185,7 +184,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>6</number>
+      <number>10</number>
      </property>
      <property name="maxVisibleItems">
       <number>16</number>
@@ -307,7 +306,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>7</number>
+      <number>11</number>
      </property>
      <property name="maxVisibleItems">
       <number>16</number>
@@ -404,7 +403,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>BBR/MUX to PD</string>
+     <string>PD to BBR/MUX</string>
     </property>
     <widget class="QComboBox" name="cB_BPWR">
      <property name="geometry">
@@ -416,7 +415,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>8</number>
+      <number>12</number>
      </property>
      <property name="maxVisibleItems">
       <number>16</number>
@@ -525,7 +524,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>9</number>
+      <number>13</number>
      </property>
      <property name="maxVisibleItems">
       <number>16</number>
@@ -634,7 +633,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>10</number>
+      <number>14</number>
      </property>
      <property name="maxVisibleItems">
       <number>16</number>
@@ -756,7 +755,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>11</number>
+      <number>15</number>
      </property>
      <property name="maxVisibleItems">
       <number>16</number>
@@ -847,14 +846,14 @@
   <widget class="QGroupBox" name="gB_AMD">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>310</y>
+     <x>400</x>
+     <y>470</y>
      <width>361</width>
      <height>271</height>
     </rect>
    </property>
    <property name="title">
-    <string>Hardware Signals (AMD)</string>
+    <string>AMD Platform</string>
    </property>
    <widget class="QGroupBox" name="gB_APU">
     <property name="geometry">
@@ -862,11 +861,11 @@
       <x>20</x>
       <y>20</y>
       <width>151</width>
-      <height>231</height>
+      <height>191</height>
      </rect>
     </property>
     <property name="title">
-     <string>APU to PD</string>
+     <string>PD to APU</string>
     </property>
     <widget class="QComboBox" name="cB_AINT">
      <property name="geometry">
@@ -878,7 +877,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>5</number>
+      <number>9</number>
      </property>
      <property name="maxVisibleItems">
       <number>16</number>
@@ -987,7 +986,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>6</number>
+      <number>10</number>
      </property>
      <property name="maxVisibleItems">
       <number>16</number>
@@ -1096,7 +1095,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>7</number>
+      <number>11</number>
      </property>
      <property name="maxVisibleItems">
       <number>16</number>
@@ -1218,7 +1217,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>8</number>
+      <number>12</number>
      </property>
      <property name="maxVisibleItems">
       <number>16</number>
@@ -1303,115 +1302,6 @@
        <string>15</string>
       </property>
      </item>
-    </widget>
-    <widget class="QComboBox" name="cB_AHPD">
-     <property name="geometry">
-      <rect>
-       <x>80</x>
-       <y>190</y>
-       <width>51</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="currentIndex">
-      <number>9</number>
-     </property>
-     <property name="maxVisibleItems">
-      <number>16</number>
-     </property>
-     <item>
-      <property name="text">
-       <string>0</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>1</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>2</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>3</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>4</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>5</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>6</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>7</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>8</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>9</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>10</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>11</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>12</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>13</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>14</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>15</string>
-      </property>
-     </item>
-    </widget>
-    <widget class="QLabel" name="label_AHPD">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>190</y>
-       <width>51</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>HPD</string>
-     </property>
     </widget>
    </widget>
    <widget class="QGroupBox" name="gB_Retimer">
@@ -1420,11 +1310,11 @@
       <x>190</x>
       <y>20</y>
       <width>151</width>
-      <height>191</height>
+      <height>151</height>
      </rect>
     </property>
     <property name="title">
-     <string>Retimer/MUX to PD</string>
+     <string>PD to Retimer/MUX</string>
     </property>
     <widget class="QComboBox" name="cB_MPWR">
      <property name="geometry">
@@ -1436,7 +1326,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>10</number>
+      <number>13</number>
      </property>
      <property name="maxVisibleItems">
       <number>16</number>
@@ -1532,129 +1422,20 @@
       </rect>
      </property>
      <property name="text">
-      <string>PWR</string>
-     </property>
-    </widget>
-    <widget class="QComboBox" name="cB_MRST">
-     <property name="geometry">
-      <rect>
-       <x>80</x>
-       <y>70</y>
-       <width>51</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="currentIndex">
-      <number>11</number>
-     </property>
-     <property name="maxVisibleItems">
-      <number>16</number>
-     </property>
-     <item>
-      <property name="text">
-       <string>0</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>1</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>2</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>3</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>4</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>5</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>6</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>7</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>8</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>9</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>10</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>11</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>12</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>13</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>14</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>15</string>
-      </property>
-     </item>
-    </widget>
-    <widget class="QLabel" name="label_MRST">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>70</y>
-       <width>51</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>RESET</string>
+      <string>PWR/HPD</string>
      </property>
     </widget>
     <widget class="QComboBox" name="cB_MSDA">
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>110</y>
+       <y>70</y>
        <width>51</width>
        <height>21</height>
       </rect>
      </property>
      <property name="currentIndex">
-      <number>12</number>
+      <number>14</number>
      </property>
      <property name="maxVisibleItems">
       <number>16</number>
@@ -1744,7 +1525,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>110</y>
+       <y>70</y>
        <width>51</width>
        <height>21</height>
       </rect>
@@ -1757,7 +1538,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>150</y>
+       <y>110</y>
        <width>51</width>
        <height>21</height>
       </rect>
@@ -1770,13 +1551,13 @@
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>150</y>
+       <y>110</y>
        <width>51</width>
        <height>21</height>
       </rect>
      </property>
      <property name="currentIndex">
-      <number>13</number>
+      <number>15</number>
      </property>
      <property name="maxVisibleItems">
       <number>16</number>
@@ -1867,9 +1648,9 @@
   <widget class="QGroupBox" name="gB_Generic">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>20</y>
-     <width>621</width>
+     <x>20</x>
+     <y>470</y>
+     <width>361</width>
      <height>271</height>
     </rect>
    </property>
@@ -2431,216 +2212,467 @@
      </item>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="gB_Info">
+   <widget class="QGroupBox" name="gB_PDEC">
     <property name="geometry">
      <rect>
       <x>190</x>
       <y>20</y>
-      <width>411</width>
-      <height>231</height>
+      <width>151</width>
+      <height>191</height>
      </rect>
     </property>
     <property name="title">
-     <string>Version Information</string>
+     <string>PD/PD to EC</string>
     </property>
-    <widget class="QLabel" name="label_PDver">
+    <widget class="QComboBox" name="cB_ECINT">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>80</x>
        <y>30</y>
-       <width>81</width>
+       <width>51</width>
        <height>21</height>
       </rect>
      </property>
-     <property name="text">
-      <string>PD</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_ECver">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>70</y>
-       <width>81</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>EC</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_HWver">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>150</y>
-       <width>81</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Schematic</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_PCHver">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>110</y>
-       <width>81</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>PCH</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_Ticket">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>190</y>
-       <width>81</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>OEM Ticket#</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_Project">
-     <property name="geometry">
-      <rect>
-       <x>208</x>
-       <y>30</y>
-       <width>81</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Project</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_Platform">
-     <property name="geometry">
-      <rect>
-       <x>210</x>
-       <y>70</y>
-       <width>81</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Platform</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-    <widget class="QComboBox" name="cB_Platform">
-     <property name="geometry">
-      <rect>
-       <x>300</x>
-       <y>70</y>
-       <width>91</width>
-       <height>22</height>
-      </rect>
+     <property name="currentIndex">
+      <number>5</number>
      </property>
      <property name="maxVisibleItems">
-      <number>2</number>
-     </property>
-     <property name="maxCount">
-      <number>2</number>
+      <number>16</number>
      </property>
      <item>
       <property name="text">
-       <string>AMD</string>
+       <string>0</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>INTEL</string>
+       <string>1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>2</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>3</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>4</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>5</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>6</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>7</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>8</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>9</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>10</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>11</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>12</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>13</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>14</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>15</string>
       </property>
      </item>
     </widget>
-    <widget class="QLineEdit" name="lineE_PDver">
+    <widget class="QLabel" name="label_ECINT">
      <property name="geometry">
       <rect>
-       <x>110</x>
+       <x>20</x>
        <y>30</y>
-       <width>91</width>
-       <height>20</height>
+       <width>51</width>
+       <height>21</height>
       </rect>
      </property>
+     <property name="text">
+      <string>INT</string>
+     </property>
     </widget>
-    <widget class="QLineEdit" name="lineE_ECver">
+    <widget class="QComboBox" name="cB_ECSDA">
      <property name="geometry">
       <rect>
-       <x>110</x>
+       <x>80</x>
        <y>70</y>
-       <width>91</width>
-       <height>20</height>
+       <width>51</width>
+       <height>21</height>
       </rect>
      </property>
+     <property name="currentIndex">
+      <number>6</number>
+     </property>
+     <property name="maxVisibleItems">
+      <number>16</number>
+     </property>
+     <item>
+      <property name="text">
+       <string>0</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>2</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>3</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>4</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>5</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>6</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>7</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>8</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>9</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>10</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>11</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>12</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>13</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>14</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>15</string>
+      </property>
+     </item>
     </widget>
-    <widget class="QLineEdit" name="lineE_PCHver">
+    <widget class="QLabel" name="label_ECSDA">
      <property name="geometry">
       <rect>
-       <x>110</x>
+       <x>20</x>
+       <y>70</y>
+       <width>51</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>SDA</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="cB_ECCLK">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
        <y>110</y>
-       <width>91</width>
-       <height>20</height>
+       <width>51</width>
+       <height>21</height>
       </rect>
      </property>
+     <property name="currentIndex">
+      <number>7</number>
+     </property>
+     <property name="maxVisibleItems">
+      <number>16</number>
+     </property>
+     <item>
+      <property name="text">
+       <string>0</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>2</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>3</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>4</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>5</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>6</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>7</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>8</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>9</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>10</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>11</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>12</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>13</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>14</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>15</string>
+      </property>
+     </item>
     </widget>
-    <widget class="QLineEdit" name="lineE_HWver">
+    <widget class="QLabel" name="label_ECCLK">
      <property name="geometry">
       <rect>
-       <x>110</x>
+       <x>20</x>
+       <y>110</y>
+       <width>51</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CLK</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="cB_PDUART">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
        <y>150</y>
-       <width>91</width>
-       <height>20</height>
+       <width>51</width>
+       <height>21</height>
       </rect>
      </property>
+     <property name="currentIndex">
+      <number>8</number>
+     </property>
+     <property name="maxVisibleItems">
+      <number>16</number>
+     </property>
+     <item>
+      <property name="text">
+       <string>0</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>2</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>3</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>4</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>5</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>6</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>7</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>8</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>9</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>10</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>11</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>12</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>13</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>14</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>15</string>
+      </property>
+     </item>
     </widget>
-    <widget class="QLineEdit" name="lineE_Ticket">
+    <widget class="QLabel" name="label_PDUART">
      <property name="geometry">
       <rect>
-       <x>110</x>
-       <y>190</y>
-       <width>91</width>
-       <height>20</height>
+       <x>20</x>
+       <y>150</y>
+       <width>51</width>
+       <height>21</height>
       </rect>
      </property>
-    </widget>
-    <widget class="QLineEdit" name="lineE_Project">
-     <property name="geometry">
-      <rect>
-       <x>300</x>
-       <y>30</y>
-       <width>91</width>
-       <height>20</height>
-      </rect>
+     <property name="text">
+      <string>UART</string>
      </property>
     </widget>
+   </widget>
+   <widget class="QCheckBox" name="chkB_HighRes">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>220</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>High Resolution</string>
+    </property>
    </widget>
   </widget>
   <widget class="QPushButton" name="pB_Run">
@@ -2649,51 +2681,629 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>670</x>
-     <y>25</y>
-     <width>101</width>
-     <height>111</height>
+     <x>780</x>
+     <y>480</y>
+     <width>221</width>
+     <height>61</height>
     </rect>
    </property>
    <property name="text">
-    <string>Run</string>
+    <string>Start Recording</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_logo">
    <property name="geometry">
     <rect>
-     <x>670</x>
-     <y>230</y>
-     <width>101</width>
-     <height>61</height>
+     <x>780</x>
+     <y>640</y>
+     <width>221</width>
+     <height>101</height>
     </rect>
    </property>
    <property name="text">
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap resource="ui_rc.qrc">:/img/docs/IFX_logo.png</pixmap>
+    <pixmap resource="ui.qrc">:/img/docs/IFX_logo.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QCheckBox" name="chkB_analog">
+  <widget class="QGroupBox" name="gB_Info">
    <property name="geometry">
     <rect>
-     <x>670</x>
-     <y>140</y>
+     <x>20</x>
+     <y>10</y>
+     <width>981</width>
+     <height>451</height>
+    </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::TabFocus</enum>
+   </property>
+   <property name="title">
+    <string>Version Information</string>
+   </property>
+   <widget class="QLabel" name="label_Project">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>70</y>
+      <width>121</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Project</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_PDver">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>70</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>PD ver.</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_Ticket">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>110</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>OEM Ticket#</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_ECver">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>110</y>
+      <width>121</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>EC/BIOS ver.</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_Port">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>150</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Port</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_Platform">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>30</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Platform</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="cB_Platform">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>30</y>
+      <width>91</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="maxVisibleItems">
+     <number>2</number>
+    </property>
+    <property name="maxCount">
+     <number>2</number>
+    </property>
+    <item>
+     <property name="text">
+      <string>AMD</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>INTEL</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLineEdit" name="lineE_Project">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>70</y>
+      <width>91</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineE_PDver">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>70</y>
+      <width>91</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineE_ECver">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>110</y>
+      <width>91</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineE_Ticket">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>110</y>
+      <width>91</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineE_Port">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>150</y>
+      <width>91</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_FR">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>150</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Fail Rate</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineE_FR">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>150</y>
+      <width>91</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textE_Issue">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>190</y>
+      <width>291</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="acceptDrops">
+     <bool>false</bool>
+    </property>
+    <property name="tabChangesFocus">
+     <bool>true</bool>
+    </property>
+    <property name="acceptRichText">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_Issue">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>190</y>
+      <width>131</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Issue Description</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_Device">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>290</y>
+      <width>131</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Device/FW ver.</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textE_Device">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>290</y>
+      <width>291</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="tabChangesFocus">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_Replication">
+    <property name="geometry">
+     <rect>
+      <x>12</x>
+      <y>350</y>
+      <width>131</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Replication Steps</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textE_Replication">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>350</y>
+      <width>291</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="tabChangesFocus">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textE_Recovery">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>30</y>
+      <width>291</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="tabChangesFocus">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_Recovery">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>30</y>
+      <width>181</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Recovery Method </string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="cB_OtherDevSel">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>130</y>
+      <width>91</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::WheelFocus</enum>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <property name="maxVisibleItems">
+     <number>2</number>
+    </property>
+    <property name="maxCount">
+     <number>2</number>
+    </property>
+    <property name="frame">
+     <bool>true</bool>
+    </property>
+    <item>
+     <property name="text">
+      <string>No</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Yes</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label_SameFailSel">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>130</y>
+      <width>381</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Same Failure with other Device?</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textE_OtherDev">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>170</y>
+      <width>291</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="tabChangesFocus">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_SameFail">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>170</y>
+      <width>181</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Details</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_OtherPort">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>270</y>
+      <width>381</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Same Failure on other port?</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="cB_DiffStepSel">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>310</y>
+      <width>91</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <property name="maxVisibleItems">
+     <number>2</number>
+    </property>
+    <property name="maxCount">
+     <number>2</number>
+    </property>
+    <item>
+     <property name="text">
+      <string>No</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Yes</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label_DiffStepSel">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>310</y>
+      <width>381</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Same Failure via different steps / system stages?</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="cB_OtherPortSel">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>270</y>
+      <width>91</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <property name="maxVisibleItems">
+     <number>2</number>
+    </property>
+    <property name="maxCount">
+     <number>2</number>
+    </property>
+    <item>
+     <property name="text">
+      <string>No</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Yes</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QTextEdit" name="textE_DiffStep">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>350</y>
+      <width>291</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="tabChangesFocus">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_DiffStep">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>350</y>
+      <width>181</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Details</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="pB_Pass">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>780</x>
+     <y>560</y>
      <width>101</width>
-     <height>31</height>
+     <height>61</height>
     </rect>
    </property>
    <property name="text">
-    <string>Analog Mode</string>
+    <string>Pass Case</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pB_Fail">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>900</x>
+     <y>560</y>
+     <width>101</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Fail Case</string>
    </property>
   </widget>
  </widget>
  <resources>
-  <include location="ui_rc.qrc"/>
+  <include location="ui.qrc"/>
  </resources>
  <connections/>
 </ui>
