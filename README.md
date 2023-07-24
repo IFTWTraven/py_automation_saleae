@@ -8,9 +8,10 @@
 
 - `main.py`: main entry
 - `ui.py`: created via QT Designer and contains all UI objects
-- `backend.py`: automation flow control
-- `run.py`: Saleae Logic2 application
+- `backend.py`: SALEAE automation flow control
+- `run.py`: assign analysers in captured logs and generate issue tracker forms.
 - `ui_rc.py`: resources 
+- `logo.py`: splash window
 
 ## Pre-requisite
 
@@ -22,8 +23,8 @@
   ```
   pip install logic2-automation
   ```
-- (Optional) Install CC analyser plugin “Manchester_PD_CC” (binary/manchester_analyzer.dll) (support Saleae Pro only)
-- (Optional) Install HPI I2C analyser plugin “HPI_I2CBurst” (binary/saleae_pd_analyser.dll)
+- (Optional) Install CC analyser plugin “Manchester_PD_CC” (binary/manchester_analyzer_dist.dll) (support Saleae Pro only)
+- (Optional) Install HPI I2C analyser plugin “I2CHPI” (binary/i2c_analyzer_for_HPI.dll)
 - (Optional) Enable “Automation Server” in SALEAE application UI: Preference-> Automation. (SALEAE software 2.4.0+) 
   # ![automation](/docs/saleae_automation.png)
 
@@ -32,26 +33,25 @@
 - Connect Saleae 16 / 16 Pro to PC (will enter Demo mode if no Saleae unit is attached)
 - Fill all information and platform type in Version Information
 - Mapping Saleae pins with pre-defined channel number, or change to preferred ones.
-- Enable "Analog Mode" will add analogue traces on CC/SBU/VBUS/OWER/RESET pins and ends up a huge size log file. Use it only when it is necessary.
+- Enable "Analogue Mode" will add analogue traces on CC/SBU/VBUS pins and ends up a huge size log file. Use it only when it is necessary.
 - Exectue python command
   ```
   py main.py
   ```
-- Click "Run" button
 - This app will 
-  - Scenario A: Saleae Logic applcation is not running (***recommended***)
-    1. Launch Saleae Logic application with automation supportive.
-    2. Hit "Run" and start log capturing per setup. 
-    3. Assign analysers to captured log after clicking "Stop".
-    4. Create a folder using current time and save log filename with Version Information data.
+  - Scenario A: Saleae Logic2 applcation is not running (***recommended***)
+    1. Launch Saleae Logic2 application with automation supportive.
+    2. Hit "Start Recording" and start log capturing per setup. 
+    3. Assign analysers to captured log after clicking "Pass Case" or "Fail Case".
+    4. Create a folder using current time and save log filename with Issue Information data.
     5. Ready for another capture cycle.
-    6. Will shutdown Saleae Logic application while quit python app.
-  - Scenario B: Saleae Logic application is running
-    1. Hit "Run" and start log capturing per setup.
-    2. Assign analysers to captured log after clicking "Stop".
-    3. Create a folder using current time and save log filename with Version Information data.
+    6. Will shutdown Saleae Logic2 application while quit python app.
+  - Scenario B: Saleae Logic2 application is running
+    1. Hit "Start Recording" and start log capturing per setup.
+    2. Assign analysers to captured log after clicking "Pass Case" or "Fail Case".
+    3. Create a folder using current time and save log filename with Issue Information data.
     4. Ready for another capture cycle.
-    5. Will NOT shutdown Saleae Logic application while quit
+    5. Will NOT shutdown Saleae Logic2 application while quit
 
 ## Limitation
 
@@ -78,5 +78,5 @@
 # Build Standalone Application
 
 ```
-pyinstaller -F --noconsole main.py -i docs/IFX_Logo.ico --name main_auto_logger.exe
+pyinstaller -F --noconsole main.py -i docs/IFX_Logo.ico --name wcs_logger.exe
 ```

@@ -29,7 +29,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>IFTW PD Logger v1.1</string>
+   <string>IFTW WCS Logger v1.1</string>
   </property>
   <property name="windowIcon">
    <iconset resource="ui.qrc">
@@ -2661,7 +2661,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QCheckBox" name="chkB_HighRes">
+   <widget class="QCheckBox" name="chkB_Analog">
     <property name="geometry">
      <rect>
       <x>190</x>
@@ -2671,7 +2671,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>High Resolution</string>
+     <string>Analogure Mode</string>
     </property>
    </widget>
   </widget>
@@ -2723,7 +2723,7 @@
     <enum>Qt::TabFocus</enum>
    </property>
    <property name="title">
-    <string>Version Information</string>
+    <string>Issue Information</string>
    </property>
    <widget class="QLabel" name="label_Project">
     <property name="geometry">

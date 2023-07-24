@@ -582,9 +582,9 @@ class Ui_Dg_Main(object):
         self.label_PDUART = QtWidgets.QLabel(self.gB_PDEC)
         self.label_PDUART.setGeometry(QtCore.QRect(20, 150, 51, 21))
         self.label_PDUART.setObjectName("label_PDUART")
-        self.chkB_HighRes = QtWidgets.QCheckBox(self.gB_Generic)
-        self.chkB_HighRes.setGeometry(QtCore.QRect(190, 220, 151, 31))
-        self.chkB_HighRes.setObjectName("chkB_HighRes")
+        self.chkB_Analog = QtWidgets.QCheckBox(self.gB_Generic)
+        self.chkB_Analog.setGeometry(QtCore.QRect(190, 220, 151, 31))
+        self.chkB_Analog.setObjectName("chkB_Analog")
         self.pB_Run = QtWidgets.QPushButton(Dg_Main)
         self.pB_Run.setEnabled(False)
         self.pB_Run.setGeometry(QtCore.QRect(780, 480, 221, 61))
@@ -784,7 +784,7 @@ class Ui_Dg_Main(object):
 
     def retranslateUi(self, Dg_Main):
         _translate = QtCore.QCoreApplication.translate
-        Dg_Main.setWindowTitle(_translate("Dg_Main", "IFTW PD Logger v1.1"))
+        Dg_Main.setWindowTitle(_translate("Dg_Main", "IFTW WCS Logger v1.1"))
         self.gB_INTEL.setTitle(_translate("Dg_Main", "INTEL Platform"))
         self.gB_Ridge.setTitle(_translate("Dg_Main", "PD to Ridge"))
         self.cB_RINT.setItemText(0, _translate("Dg_Main", "0"))
@@ -1185,9 +1185,9 @@ class Ui_Dg_Main(object):
         self.cB_PDUART.setItemText(14, _translate("Dg_Main", "14"))
         self.cB_PDUART.setItemText(15, _translate("Dg_Main", "15"))
         self.label_PDUART.setText(_translate("Dg_Main", "UART"))
-        self.chkB_HighRes.setText(_translate("Dg_Main", "High Resolution"))
+        self.chkB_Analog.setText(_translate("Dg_Main", "Analogure Mode"))
         self.pB_Run.setText(_translate("Dg_Main", "Start Recording"))
-        self.gB_Info.setTitle(_translate("Dg_Main", "Version Information"))
+        self.gB_Info.setTitle(_translate("Dg_Main", "Issue Information"))
         self.label_Project.setText(_translate("Dg_Main", "Project"))
         self.label_PDver.setText(_translate("Dg_Main", "PD ver."))
         self.label_Ticket.setText(_translate("Dg_Main", "OEM Ticket#"))

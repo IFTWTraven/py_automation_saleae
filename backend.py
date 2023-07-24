@@ -85,7 +85,7 @@ class MainWindow_controller(QtWidgets.QMainWindow):
             hdr = getattr(self.ui, element_name)
             hdr.textChanged.connect(self.on_stateChanged)
 
-        self.ui.chkB_HighRes.stateChanged.connect(self.on_stateChanged)
+        self.ui.chkB_Analog.stateChanged.connect(self.on_stateChanged)
         self.ui.pB_Run.clicked.connect(self.on_pB_Run)
         self.ui.pB_Pass.clicked.connect(self.on_pB_Pass)
         self.ui.pB_Fail.clicked.connect(self.on_pB_Fail)
@@ -188,7 +188,7 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         self.bsda = self.ui.cB_BSDA.currentIndex()
         self.bclk = self.ui.cB_BCLK.currentIndex()
     
-        self.HighRes = self.ui.chkB_HighRes.isChecked()
+        self.analogmode = self.ui.chkB_Analog.isChecked()
         
         self.sheetname = ''
 
@@ -204,7 +204,7 @@ class MainWindow_controller(QtWidgets.QMainWindow):
             self.ui.gB_Info.setEnabled(False)
             self.ui.gB_AMD.setEnabled(False)
             self.ui.gB_INTEL.setEnabled(False)
-            self.ui.chkB_HighRes.setEnabled(False)
+            self.ui.chkB_Analog.setEnabled(False)
 
             self.timerStartCapture.start(10)
         else:
@@ -272,4 +272,4 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         self.ui.gB_Info.setEnabled(True)
         self.ui.gB_INTEL.setEnabled(True)
         self.ui.gB_AMD.setEnabled(True)
-        self.ui.chkB_HighRes.setEnabled(True)
+        self.ui.chkB_Analog.setEnabled(True)

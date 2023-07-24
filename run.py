@@ -270,27 +270,37 @@ def Saleae_Setup(self):
                 enabled_ch_i2c = [6, 7]
                 enabled_ch_cc = [0, 1]
             
-            if (self.HighRes):
-                analogue_rate_setting = 1_562_500
-            else:
+            if (self.analogmode):
                 analogue_rate_setting = 781_250
-                
-            # only Pro skus support 1.2V
-            if "Pro" in sdevice:
-                config = automation.LogicDeviceConfiguration(
-                    enabled_digital_channels = enabled_ch,
-                    enabled_analog_channels = enabled_analog_ch,
-                    digital_sample_rate = 6_250_000,
-                    digital_threshold_volts = 1.2,
-                    analog_sample_rate = analogue_rate_setting
-                )
+                # only Pro skus support 1.2V
+                if "Pro" in sdevice:
+                    config = automation.LogicDeviceConfiguration(
+                        enabled_digital_channels = enabled_ch,
+                        enabled_analog_channels = enabled_analog_ch,
+                        digital_sample_rate = 6_250_000,
+                        digital_threshold_volts = 1.2,
+                        analog_sample_rate = analogue_rate_setting
+                    )
+                else:
+                    config = automation.LogicDeviceConfiguration(
+                        enabled_digital_channels = enabled_ch,
+                        enabled_analog_channels = enabled_analog_ch,
+                        digital_sample_rate = 5_000_000,
+                        analog_sample_rate = analogue_rate_setting
+                    )
             else:
-                config = automation.LogicDeviceConfiguration(
-                    enabled_digital_channels = enabled_ch,
-                    enabled_analog_channels = enabled_analog_ch,
-                    digital_sample_rate = 6_250_000,
-                    analog_sample_rate = analogue_rate_setting
-                )
+                # only Pro skus support 1.2V
+                if "Pro" in sdevice:
+                    config = automation.LogicDeviceConfiguration(
+                        enabled_digital_channels = enabled_ch,
+                        digital_sample_rate = 6_250_000,
+                        digital_threshold_volts = 1.2,
+                    )
+                else:
+                    config = automation.LogicDeviceConfiguration(
+                        enabled_digital_channels = enabled_ch,
+                        digital_sample_rate = 5_000_000,
+                    )
        
         duration_seconds = 1200     # need a number for timer capture mode
         capture_settings = automation.CaptureConfiguration(
