@@ -5,24 +5,55 @@ from PyQt5.QtCore import QTimer, QObject
 
 from ui import Ui_Dg_Main
 from run import *
-from saleae import automation
+#from saleae import automation
 from datetime import datetime
-
+import subprocess
 import os
 import os.path
 import time
 
+def is_usb_device_present(vid, pid):
+    try:
+        # Create a STARTUPINFO object to hide the console window
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+
+        # Run the subprocess with the startupinfo
+        result = subprocess.run(['wmic', 'path', 'Win32_USBControllerDevice', 'get', 'Dependent'], capture_output=True, text=True, startupinfo=startupinfo)
+        # Run the command to get USB device information
+#        result = subprocess.run(['wmic', 'path', 'Win32_USBControllerDevice', 'get', 'Dependent'], capture_output=True, text=True)
+
+        # Check if the command was successful
+        if result.returncode == 0:
+            vid_pid_str = f"VID_{vid}&PID_{pid}"  # Format the VID and PID as needed
+            # Check if the specified VID is present in the output
+            return vid_pid_str in result.stdout
+        else:
+#            print("Error occurred while getting USB device information.")
+#            print("Error message:", result.stderr)
+            return False
+    except FileNotFoundError:
+#        print("WMIC command not found. Make sure you are using Windows.")
+        return False
+
 class MainWindow_controller(QtWidgets.QMainWindow):
     def closeEvent(self, event):
+        self.timerCheckAttachedRecDev.stop()
+
         # if accendentically close app while running
         if self.is_running:
             self.on_timerStopCapture()
     
         if self.need_close_saleae_while_exit:
             try:
-                self.manager = Saleae_Close(self)
                 # only kill saleae if it was opened by this script
                 close_saleae_thread(self)
+            except:
+                pass
+                
+        if self.need_close_ellisys_while_exit:
+            try:
+                close_ellisys_thread(self)
             except:
                 pass
 
@@ -33,10 +64,13 @@ class MainWindow_controller(QtWidgets.QMainWindow):
 
         self.cBset = ['cB_ICC1', 'cB_ICC2', 'cB_ISBU1', 'cB_ISBU2', 'cB_IVBUS',\
                     'cB_ECINT', 'cB_ECSDA', 'cB_ECCLK', 'cB_PDUART',\
+                    'cB_ECINT_2', 'cB_ECSDA_2', 'cB_ECCLK_2', 'cB_PDUART_2',\
+                    'cB_ECINT_3', 'cB_ECSDA_3', 'cB_ECCLK_3',\
                     'cB_AINT', 'cB_ARST', 'cB_ASDA', 'cB_ACLK', 'cB_MPWR', 'cB_MSDA', 'cB_MCLK',\
                     'cB_RINT', 'cB_RSDA', 'cB_RCLK', 'cB_BPWR', 'cB_BRST', 'cB_BSDA', 'cB_BCLK',\
                     'cB_OtherDevSel', 'cB_OtherPortSel', 'cB_DiffStepSel',\
-                    'cB_Platform'\
+                    'cB_Platform',\
+#                    'cB_RecDev'\
                     ]
         self.lineEset = ['lineE_Project', 'lineE_PDver','lineE_ECver', 'lineE_Ticket', 'lineE_Port', 'lineE_FR']
         self.textEset = ['textE_Issue', 'textE_Device', 'textE_Replication', 'textE_Recovery', 'textE_OtherDev', 'textE_DiffStep']
@@ -46,13 +80,6 @@ class MainWindow_controller(QtWidgets.QMainWindow):
 #                    self.platform\
 #                    ]
 #        self.lineEvars = [self.pdver, self.ecver, self.pchver, self.hwver, self.ticket, self.project]
-
-        self.setup_control()
-
-        self.cB_SelectionChanged()
-        
-        self.ui.gB_INTEL.setVisible(False)
-        self.ui.gB_AMD.setVisible(True)
 
         self.is_running = False
         self.saleae_is_running = False
@@ -67,10 +94,26 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         self.capture = 0
         self.capture_setting = 0
         self.enabled_ch = self.enabled_ch_i2c = self.enabled_ch_cc = []
-        
+                
         self.logsuffix = ''
         self.allrecords = ''
         self.sheetname = ''
+        self.RecDevLst = ['']
+        self.ellisys_configstr = ''
+#        self.ellisysremote = ''
+        self.need_close_ellisys_while_exit = False
+
+        self.changerecdev = False
+
+        self.setup_control()
+        self.cB_SelectionChanged()       
+
+        self.RecDevLst = self.updateRecDev()
+
+#        self.ui.gB_INTEL.setVisible(False)
+#        self.ui.gB_AMD.setVisible(True)
+
+        self.timerCheckAttachedRecDev.start(2000)
        
     def setup_control(self):
         for element_name in self.cBset:
@@ -85,6 +128,8 @@ class MainWindow_controller(QtWidgets.QMainWindow):
             hdr = getattr(self.ui, element_name)
             hdr.textChanged.connect(self.on_stateChanged)
 
+        self.ui.cB_RecDev.currentIndexChanged.connect(self.on_RecDevstateChanged)
+
         self.ui.chkB_Analog.stateChanged.connect(self.on_stateChanged)
         self.ui.pB_Run.clicked.connect(self.on_pB_Run)
         self.ui.pB_Pass.clicked.connect(self.on_pB_Pass)
@@ -97,12 +142,35 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         self.timerSaveCapture = QTimer()
         self.timerSaveCapture.timeout.connect(self.on_timerSaveCapture)
 
-    def on_stateChanged(self):
+        self.timerCheckAttachedRecDev = QTimer()
+        self.timerCheckAttachedRecDev.timeout.connect(self.on_timerCheckAttachedRecDev)
+
+    def updateRecDev(self):
+        self.ellisys_is_attached = is_usb_device_present(ELLISYS_VID, ELLISYS_PID)
+        self.saleae_is_attached = is_usb_device_present(SALEAE_VID, SALEAE_PID)
+        
+        if self.ellisys_is_attached and self.saleae_is_attached:
+            DevLst = [String_SALEAE, String_Ellisys]
+        elif not self.ellisys_is_attached and self.saleae_is_attached:
+            DevLst = [String_SALEAE]
+        elif self.ellisys_is_attached and not self.saleae_is_attached:
+            DevLst = [String_Ellisys]
+        else:
+            DevLst = ['']
+            
+        if self.RecDevLst != DevLst:
+            self.ui.cB_RecDev.clear()
+            self.ui.cB_RecDev.addItems(DevLst)
+        
+        return DevLst
+
+    def on_RecDevstateChanged(self):
+        self.changerecdev = True
+        self.on_stateChanged()
     
+    def on_stateChanged(self):
         self.cB_SelectionChanged()
 
-        self.ui.gB_INTEL.setVisible(self.ui.cB_Platform.currentIndex())
-        self.ui.gB_AMD.setVisible(not self.ui.cB_Platform.currentIndex())
         self.ui.textE_OtherDev.setEnabled(self.ui.cB_OtherDevSel.currentIndex())
         self.ui.textE_DiffStep.setEnabled(self.ui.cB_DiffStepSel.currentIndex())
 
@@ -117,33 +185,55 @@ class MainWindow_controller(QtWidgets.QMainWindow):
                         
         if not self.otherdevsel and not self.diffstepsel:
             ifcondition = True
-            
+
+        if self.recorddevice == String_SALEAE:
+            self.ui.gB_Generic.setVisible(True)
+            self.ui.gB_INTEL.setVisible(self.ui.cB_Platform.currentIndex())
+            self.ui.gB_AMD.setVisible(not self.ui.cB_Platform.currentIndex())
+
+            self.ui.gB_Ellisys.setVisible(False)
+            self.ui.label_ellisys.setVisible(False)
+        elif self.recorddevice == String_Ellisys:
+            self.ui.gB_Generic.setVisible(False)
+            self.ui.gB_INTEL.setVisible(False)
+            self.ui.gB_AMD.setVisible(False)
+
+            self.ui.gB_Ellisys.setVisible(True)
+            self.ui.label_ellisys.setVisible(True)
+
         if((self.project != '') and (self.pdver != '') and (self.ecver != '') and (self.port != '') and (self.failrate != '')\
                         and (self.issue != '') and (self.device != '') and (self.replication != '') and (self.recovery != '')\
                         and ifcondition):
-# for test only
-#        if ifcondition:
-            if self.ui.cB_Platform.currentText() == 'INTEL':      # INTEL platform
-                if len(set([self.icc1, self.icc2, self.isbu1, self.isbu2, self.ivbus,\
-                            self.ecint, self.ecsda, self.ecclk, self.pduart,\
-                            self.rint, self.rsda, self.rclk, self.bpwr, self.brst, self.bsda, self.bclk\
-                            ])) == 16:
+            if self.recorddevice == String_SALEAE:
+                if self.ui.cB_Platform.currentText() == 'INTEL':      # INTEL platform
+                    if len(set([self.icc1, self.icc2, self.isbu1, self.isbu2, self.ivbus,\
+                                self.ecint, self.ecsda, self.ecclk, self.pduart,\
+                                self.rint, self.rsda, self.rclk, self.bpwr, self.brst, self.bsda, self.bclk\
+                                ])) == 16:
+                        self.ui.pB_Run.setEnabled(True)
+                    else:
+                        self.ui.pB_Run.setEnabled(False)
+                elif self.ui.cB_Platform.currentText() == 'AMD':      # AMD platform
+                    if len(set([self.icc1, self.icc2, self.isbu1, self.isbu2, self.ivbus,\
+                                self.ecint, self.ecsda, self.ecclk, self.pduart,\
+                                self.aint, self.arst, self.asda, self.aclk, self.mpwr, self.msda, self.mclk\
+                                ])) == 16:
+                        self.ui.pB_Run.setEnabled(True)
+                    else:
+                        self.ui.pB_Run.setEnabled(False)
+            elif self.recorddevice == String_Ellisys:
+                if len(set([self.ecint_ellisys, self.ecsda_ellisys, self.ecclk_ellisys, self.pduart_ellisys,\
+                            self.ecint2_ellisys, self.ecsda2_ellisys, self.ecclk2_ellisys,\
+                            ])) == 7:
                     self.ui.pB_Run.setEnabled(True)
                 else:
                     self.ui.pB_Run.setEnabled(False)
-            elif self.ui.cB_Platform.currentText() == 'AMD':      # AMD platform
-                if len(set([self.icc1, self.icc2, self.isbu1, self.isbu2, self.ivbus,\
-                            self.ecint, self.ecsda, self.ecclk, self.pduart,\
-                            self.aint, self.arst, self.asda, self.aclk, self.mpwr, self.msda, self.mclk\
-                            ])) == 16:
-                    self.ui.pB_Run.setEnabled(True)
-                else:
-                    self.ui.pB_Run.setEnabled(False)
-            self.platform = self.ui.cB_Platform.currentText()
         else:
             self.ui.pB_Run.setEnabled(False)
         
     def cB_SelectionChanged(self):
+        self.recorddevice = self.ui.cB_RecDev.currentText()
+    
         self.platform = self.ui.cB_Platform.currentText()
         self.project = self.ui.lineE_Project.text()
         self.pdver = self.ui.lineE_PDver.text()
@@ -189,8 +279,21 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         self.bclk = self.ui.cB_BCLK.currentIndex()
     
         self.analogmode = self.ui.chkB_Analog.isChecked()
+
+        # Ellisys
+        self.ecint_ellisys = self.ui.cB_ECINT_2.currentIndex()
+        self.ecsda_ellisys = self.ui.cB_ECSDA_2.currentIndex()
+        self.ecclk_ellisys = self.ui.cB_ECCLK_2.currentIndex()
+        self.pduart_ellisys = self.ui.cB_PDUART_2.currentIndex()
+        self.ecint2_ellisys = self.ui.cB_ECINT_3.currentIndex()
+        self.ecsda2_ellisys = self.ui.cB_ECSDA_3.currentIndex()
+        self.ecclk2_ellisys = self.ui.cB_ECCLK_3.currentIndex()
         
-        self.sheetname = ''
+        # don't use a new sheet if only record device is changed
+        if self.changerecdev:
+            self.changerecdev = False
+        else:
+            self.sheetname = ''
 
     def on_pB_Run(self):
         self.is_running = not self.is_running
@@ -201,51 +304,60 @@ class MainWindow_controller(QtWidgets.QMainWindow):
             self.ui.pB_Run.setText("Starting...")
             self.ui.pB_Run.setEnabled(False)
             self.ui.gB_Generic.setEnabled(False)
+            self.ui.gB_Ellisys.setEnabled(False)
             self.ui.gB_Info.setEnabled(False)
             self.ui.gB_AMD.setEnabled(False)
             self.ui.gB_INTEL.setEnabled(False)
             self.ui.chkB_Analog.setEnabled(False)
+            self.ui.cB_RecDev.setEnabled(False)
 
-            self.timerStartCapture.start(10)
+            self.timerStartCapture.start(100)
         else:
             self.savetofile = False
-            self.timerStopCapture.start(10)
+            self.timerStopCapture.start(100)
 
     def on_pB_Pass(self):
         self.is_running = not self.is_running
         self.logsuffix += 'Pass_' + self.project + '_' + self.platform + '_PD' + self.pdver + '_EC' + self.ecver + '_Ticket' + self.ticket
 
         self.savetofile = True
-        self.timerStopCapture.start(10)
+        self.timerStopCapture.start(100)
 
     def on_pB_Fail(self):
         self.is_running = not self.is_running
         self.logsuffix += 'Fail_' + self.project + '_' + self.platform + '_PD' + self.pdver + '_EC' + self.ecver + '_Ticket' + self.ticket
 
         self.savetofile = True
-        self.timerStopCapture.start(10)
+        self.timerStopCapture.start(100)
             
     def on_timerStartCapture(self):
         self.timerStartCapture.stop()
         
-        # check if saleae is running or not
-        self.saleae_is_running = chk_SaleaeLogicRunning(self)
-        
-        if self.saleae_is_running:
-            self.apistr = 'connect'         # run automation.Manager.connect()
-        else:
-            search_and_run_saleae(self)
-#            self.apistr = 'launch'          # run automation.Manager.launch()
-            self.apistr = 'connect'         # run automation.Manager.connect()
-            self.saleae_is_running = True
-
-#        if not self.saleae_is_running:                  # saleae is not running
-#            search_and_run_saleae(self)                 # execute saleae logic2 with --automation argument
+        run_StartCapture(self)
+        # if self.recorddevice == String_SALEAE:
+            # # check if saleae is running or not
+            # self.saleae_is_running = chk_LogApplicationRunning("Logic.exe")
             
-        # init saleae
-        self.manager, self.sdevice, self.config, self.capture_settings, \
-        self.enabled_ch, self.enabled_ch_i2c, self.enabled_ch_cc = Saleae_Setup(self)
-        self.capture = Saleae_StartCapture(self)
+            # if self.saleae_is_running:
+                # self.apistr = 'connect'         # run automation.Manager.connect()
+            # else:
+                # search_and_run_saleae(self)
+    # #            self.apistr = 'launch'          # run automation.Manager.launch()
+                # self.apistr = 'connect'         # run automation.Manager.connect()
+                # self.saleae_is_running = True
+
+    # #        if not self.saleae_is_running:                  # saleae is not running
+    # #            search_and_run_saleae(self)                 # execute saleae logic2 with --automation argument
+                
+            # # init saleae
+            # self.manager, self.sdevice, self.config, self.capture_settings, \
+            # self.enabled_ch, self.enabled_ch_i2c, self.enabled_ch_cc = Saleae_Setup(self)
+            # self.capture = Saleae_StartCapture(self)
+
+        # elif self.recorddevice == String_Ellisys:
+            # self.ellisys_configstr = Ellisys_Setup(self)
+# #            self.ellisysremote = Ellisys_StartCapture(self)
+            # Ellisys_StartCapture(self)
 
         self.ui.pB_Run.setEnabled(True)
         self.ui.pB_Pass.setEnabled(True)
@@ -258,18 +370,32 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         self.ui.pB_Run.setEnabled(False)
         self.ui.pB_Pass.setEnabled(False)
         self.ui.pB_Fail.setEnabled(False)
-        self.timerSaveCapture.start(10)
+        self.timerSaveCapture.start(100)
 
     def on_timerSaveCapture(self):
         self.timerSaveCapture.stop()
-        Saleae_StopCapture(self)      
+        
+        run_StopCapture(self)
+
+        # if self.recorddevice == String_SALEAE:
+            # Saleae_StopCapture(self)      
+        # elif self.recorddevice == String_Ellisys:
+            # Ellisys_StopCapture(self)
+            
         self.logsuffix = ''
         self.ui.pB_Run.setText("Start Recording")
         self.ui.pB_Run.setEnabled(True)
         self.ui.pB_Pass.setEnabled(False)
         self.ui.pB_Fail.setEnabled(False)
-        self.ui.gB_Generic.setEnabled(True)
+        self.ui.cB_RecDev.setEnabled(True)
+        
         self.ui.gB_Info.setEnabled(True)
+        self.ui.gB_Generic.setEnabled(True)
+        self.ui.gB_Ellisys.setEnabled(True)
         self.ui.gB_INTEL.setEnabled(True)
         self.ui.gB_AMD.setEnabled(True)
         self.ui.chkB_Analog.setEnabled(True)
+    
+    def on_timerCheckAttachedRecDev(self):
+        self.RecDevLst = self.updateRecDev()
+        
