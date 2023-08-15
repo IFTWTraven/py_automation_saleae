@@ -8,7 +8,9 @@ import os
 import os.path
 import sys
 import time
-#import psutil
+import psutil
+import re
+from pywinauto import findwindows, Application
 #import subprocess
 import openpyxl
 import Ice
@@ -27,6 +29,206 @@ String_SALEAE = 'Saleae Logic'
 Ice.loadSlice("--all -I. AnalyzerRemoteControl.ice")
 
 import Ellisys.Platform.NetworkRemoteControl.Analyzer
+
+def list_process_ids_by_name_pattern(name_pattern):
+    process_ids = []
+    
+    for process in psutil.process_iter(attrs=['pid', 'name']):
+        try:
+            process_name = process.info['name']
+            if re.match(name_pattern, process_name):
+                process_ids.append(process.info['pid'])
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    
+    for pid in process_ids:
+        app = Application(backend="uia").connect(process=pid)      
+        try:
+            app_data = findwindows.find_element(process=pid)
+            if app_data:
+                main_window = app.window()
+                try:
+                    print("Window Title:", main_window.window_text(), pid)
+                    return app
+                except:
+                    print("Nope")
+                    pass
+        except:
+            print("no")
+    return 0
+
+def AssignSaleaeChannelName(self):
+    app_name_pattern = r"Logic( 2 \[.*\])?"  # Regular expression pattern to match "Logic" and "Logic 2 [...]"
+    app = list_process_ids_by_name_pattern(app_name_pattern)      
+    
+    if app:
+        main_window = app.window()
+        print("Window Title:", main_window.window_text())
+        # Get the main window
+        main_window = app.window(title=main_window.window_text())
+
+        ext_var = self.icc1
+        title = f'^D{ext_var}.*'
+        btn = main_window.child_window(title_re=title, control_type="Button")
+        btn.Edit2.type_keys('^a')
+        #Edit the content and submit it.
+        btn.Edit2.type_keys('CC1{ENTER}')
+
+        ext_var = self.icc2
+        title = f'^D{ext_var}.*'
+        btn = main_window.child_window(title_re=title, control_type="Button")
+        btn.Edit2.type_keys('^a')
+        #Edit the content and submit it.
+        btn.Edit2.type_keys('CC2{ENTER}')
+
+        ext_var = self.isbu1
+        title = f'^D{ext_var}.*'
+        btn = main_window.child_window(title_re=title, control_type="Button")
+        btn.Edit2.type_keys('^a')
+        #Edit the content and submit it.
+        btn.Edit2.type_keys('SBU1{ENTER}')
+
+        ext_var = self.isbu2
+        title = f'^D{ext_var}.*'
+        btn = main_window.child_window(title_re=title, control_type="Button")
+        btn.Edit2.type_keys('^a')
+        #Edit the content and submit it.
+        btn.Edit2.type_keys('SBU2{ENTER}')
+
+        ext_var = self.ivbus
+        title = f'^D{ext_var}.*'
+        btn = main_window.child_window(title_re=title, control_type="Button")
+        btn.Edit2.type_keys('^a')
+        #Edit the content and submit it.
+        btn.Edit2.type_keys('VBUS{ENTER}')
+
+        ext_var = self.ecint
+        title = f'^D{ext_var}.*'
+        btn = main_window.child_window(title_re=title, control_type="Button")
+        btn.Edit2.type_keys('^a')
+        #Edit the content and submit it.
+        btn.Edit2.type_keys('EC_INT{ENTER}')
+
+        ext_var = self.ecsda
+        title = f'^D{ext_var}.*'
+        btn = main_window.child_window(title_re=title, control_type="Button")
+        btn.Edit2.type_keys('^a')
+        #Edit the content and submit it.
+        btn.Edit2.type_keys('EC_SDA{ENTER}')
+
+        ext_var = self.ecclk
+        title = f'^D{ext_var}.*'
+        btn = main_window.child_window(title_re=title, control_type="Button")
+        btn.Edit2.type_keys('^a')
+        #Edit the content and submit it.
+        btn.Edit2.type_keys('EC_CLK{ENTER}')
+
+        ext_var = self.pduart
+        title = f'^D{ext_var}.*'
+        btn = main_window.child_window(title_re=title, control_type="Button")
+        btn.Edit2.type_keys('^a')
+        #Edit the content and submit it.
+        btn.Edit2.type_keys('PD_UART{ENTER}')
+
+        if self.platform == 'INTEL':               # INTEL 
+            ext_var = self.rint
+            title = f'^D{ext_var}.*'
+            btn = main_window.child_window(title_re=title, control_type="Button")
+            btn.Edit2.type_keys('^a')
+            #Edit the content and submit it.
+            btn.Edit2.type_keys('RIDGE_INT{ENTER}')
+
+            ext_var = self.rsda
+            title = f'^D{ext_var}.*'
+            btn = main_window.child_window(title_re=title, control_type="Button")
+            btn.Edit2.type_keys('^a')
+            #Edit the content and submit it.
+            btn.Edit2.type_keys('RIDGE_SDA{ENTER}')
+
+            ext_var = self.rclk
+            title = f'^D{ext_var}.*'
+            btn = main_window.child_window(title_re=title, control_type="Button")
+            btn.Edit2.type_keys('^a')
+            #Edit the content and submit it.
+            btn.Edit2.type_keys('RIDGE_CLK{ENTER}')
+
+            ext_var = self.bpwr
+            title = f'^D{ext_var}.*'
+            btn = main_window.child_window(title_re=title, control_type="Button")
+            btn.Edit2.type_keys('^a')
+            #Edit the content and submit it.
+            btn.Edit2.type_keys('BBR_PWR{ENTER}')
+
+            ext_var = self.brst
+            title = f'^D{ext_var}.*'
+            btn = main_window.child_window(title_re=title, control_type="Button")
+            btn.Edit2.type_keys('^a')
+            #Edit the content and submit it.
+            btn.Edit2.type_keys('BBR_RST{ENTER}')
+
+            ext_var = self.bsda
+            title = f'^D{ext_var}.*'
+            btn = main_window.child_window(title_re=title, control_type="Button")
+            btn.Edit2.type_keys('^a')
+            #Edit the content and submit it.
+            btn.Edit2.type_keys('BBR_SDA{ENTER}')
+
+            ext_var = self.bclk
+            title = f'^D{ext_var}.*'
+            btn = main_window.child_window(title_re=title, control_type="Button")
+            btn.Edit2.type_keys('^a')
+            #Edit the content and submit it.
+            btn.Edit2.type_keys('BBR_CLK{ENTER}')
+
+        elif self.platform == 'AMD':                # AMD
+            ext_var = self.aint
+            title = f'^D{ext_var}.*'
+            btn = main_window.child_window(title_re=title, control_type="Button")
+            btn.Edit2.type_keys('^a')
+            #Edit the content and submit it.
+            btn.Edit2.type_keys('APU_INT{ENTER}')
+
+            ext_var = self.arst
+            title = f'^D{ext_var}.*'
+            btn = main_window.child_window(title_re=title, control_type="Button")
+            btn.Edit2.type_keys('^a')
+            #Edit the content and submit it.
+            btn.Edit2.type_keys('APU_RST{ENTER}')
+
+            ext_var = self.asda
+            title = f'^D{ext_var}.*'
+            btn = main_window.child_window(title_re=title, control_type="Button")
+            btn.Edit2.type_keys('^a')
+            #Edit the content and submit it.
+            btn.Edit2.type_keys('APU_SDA{ENTER}')
+
+            ext_var = self.aclk
+            title = f'^D{ext_var}.*'
+            btn = main_window.child_window(title_re=title, control_type="Button")
+            btn.Edit2.type_keys('^a')
+            #Edit the content and submit it.
+            btn.Edit2.type_keys('APU_CLK{ENTER}')
+
+            ext_var = self.mpwr
+            title = f'^D{ext_var}.*'
+            btn = main_window.child_window(title_re=title, control_type="Button")
+            btn.Edit2.type_keys('^a')
+            #Edit the content and submit it.
+            btn.Edit2.type_keys('MUX_PWR/HPD{ENTER}')
+
+            ext_var = self.msda
+            title = f'^D{ext_var}.*'
+            btn = main_window.child_window(title_re=title, control_type="Button")
+            btn.Edit2.type_keys('^a')
+            #Edit the content and submit it.
+            btn.Edit2.type_keys('MUX_SDA{ENTER}')
+
+            ext_var = self.mclk
+            title = f'^D{ext_var}.*'
+            btn = main_window.child_window(title_re=title, control_type="Button")
+            btn.Edit2.type_keys('^a')
+            #Edit the content and submit it.
+            btn.Edit2.type_keys('MUX_CLK{ENTER}')
         
 def SaveToFile(self, main_window):
     currentdate = datetime.now().strftime("%Y%m%d")  # Format the current date as desired
@@ -233,6 +435,7 @@ def Logger_CaptureSettings(self, log_name, ch_details):
         print(log_name)
 
         if self.recorddevice == String_SALEAE and ch_details:
+            AssignSaleaeChannelName(self)
             if self.platform == 'INTEL':               # INTEL 
                 print(' CC1:', self.icc1, '\tRIDGE INT:', self.rint, '\tBBR PWR:', self.bpwr)
                 print(' CC2:', self.icc2, '\tRIDGE SDA:', self.rsda, '\tBBR RST:', self.brst)
