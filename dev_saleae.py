@@ -74,11 +74,11 @@ def Saleae_Setup(self):
 
     if self.platform == 'INTEL':                                        # INTEL 
         enabled_ch = digital_ch_cc + digital_ch_intel
-        enabled_ch_i2c = [self.rsda, self.rclk, self.bsda, self.bclk]
+        enabled_ch_i2c = [self.ecsda, self.ecclk, self.rsda, self.rclk, self.bsda, self.bclk]
 #        enabled_analog_ch = analog_ch_cc + analog_ch_intel
     elif self.platform == 'AMD':                                        # AMD
         enabled_ch = digital_ch_cc + digital_ch_amd
-        enabled_ch_i2c = [self.asda, self.aclk, self.msda, self.mclk]
+        enabled_ch_i2c = [self.ecsda, self.ecclk, self.asda, self.aclk, self.msda, self.mclk]
 #        enabled_analog_ch = analog_ch_cc + analog_ch_amd
     
     try:
