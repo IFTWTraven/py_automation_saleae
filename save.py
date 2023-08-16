@@ -48,13 +48,14 @@ def list_process_ids_by_name_pattern(name_pattern):
             if app_data:
                 main_window = app.window()
                 try:
-                    print("Window Title:", main_window.window_text(), pid)
+#                    print("Window Title:", main_window.window_text(), pid)
                     return app
                 except:
-                    print("Nope")
+#                    print("Nope")
                     pass
         except:
-            print("no")
+            pass
+#            print("no")
     return 0
 
 def AssignSaleaeChannelName(self):
@@ -63,172 +64,66 @@ def AssignSaleaeChannelName(self):
     
     if app:
         main_window = app.window()
-        print("Window Title:", main_window.window_text())
+#        print("Window Title:", main_window.window_text())
         # Get the main window
         main_window = app.window(title=main_window.window_text())
+        
+        for i in range(8):
+            main_window.type_keys('^-')
+            time.sleep(0.1)
 
-        ext_var = self.icc1
-        title = f'^D{ext_var}.*'
-        btn = main_window.child_window(title_re=title, control_type="Button")
-        btn.Edit2.type_keys('^a')
-        #Edit the content and submit it.
-        btn.Edit2.type_keys('CC1{ENTER}')
+        actions_intel = [
+            {"ext_var": self.icc1, "label": "CC1"},
+            {"ext_var": self.icc2, "label": "CC2"},
+            {"ext_var": self.isbu1, "label": "SBU1"},
+            {"ext_var": self.isbu2, "label": "SBU2"},
+            {"ext_var": self.ivbus, "label": "VBUS"},
+            {"ext_var": self.ecint, "label": "EC_INT"},
+            {"ext_var": self.ecsda, "label": "EC_SDA"},
+            {"ext_var": self.ecclk, "label": "EC_CLK"},
+            {"ext_var": self.pduart, "label": "PD_UART"},
+            {"ext_var": self.rint, "label": "RIDGE_INT"},
+            {"ext_var": self.rsda, "label": "RIDGE_SDA"},
+            {"ext_var": self.rclk, "label": "RIDGE_CLK"},
+            {"ext_var": self.bpwr, "label": "BBR_PWR"},
+            {"ext_var": self.brst, "label": "BBR_RST"},
+            {"ext_var": self.bsda, "label": "BBR_SDA"},
+            {"ext_var": self.bclk, "label": "BBR_CLK"}
+        ]
 
-        ext_var = self.icc2
-        title = f'^D{ext_var}.*'
-        btn = main_window.child_window(title_re=title, control_type="Button")
-        btn.Edit2.type_keys('^a')
-        #Edit the content and submit it.
-        btn.Edit2.type_keys('CC2{ENTER}')
-
-        ext_var = self.isbu1
-        title = f'^D{ext_var}.*'
-        btn = main_window.child_window(title_re=title, control_type="Button")
-        btn.Edit2.type_keys('^a')
-        #Edit the content and submit it.
-        btn.Edit2.type_keys('SBU1{ENTER}')
-
-        ext_var = self.isbu2
-        title = f'^D{ext_var}.*'
-        btn = main_window.child_window(title_re=title, control_type="Button")
-        btn.Edit2.type_keys('^a')
-        #Edit the content and submit it.
-        btn.Edit2.type_keys('SBU2{ENTER}')
-
-        ext_var = self.ivbus
-        title = f'^D{ext_var}.*'
-        btn = main_window.child_window(title_re=title, control_type="Button")
-        btn.Edit2.type_keys('^a')
-        #Edit the content and submit it.
-        btn.Edit2.type_keys('VBUS{ENTER}')
-
-        ext_var = self.ecint
-        title = f'^D{ext_var}.*'
-        btn = main_window.child_window(title_re=title, control_type="Button")
-        btn.Edit2.type_keys('^a')
-        #Edit the content and submit it.
-        btn.Edit2.type_keys('EC_INT{ENTER}')
-
-        ext_var = self.ecsda
-        title = f'^D{ext_var}.*'
-        btn = main_window.child_window(title_re=title, control_type="Button")
-        btn.Edit2.type_keys('^a')
-        #Edit the content and submit it.
-        btn.Edit2.type_keys('EC_SDA{ENTER}')
-
-        ext_var = self.ecclk
-        title = f'^D{ext_var}.*'
-        btn = main_window.child_window(title_re=title, control_type="Button")
-        btn.Edit2.type_keys('^a')
-        #Edit the content and submit it.
-        btn.Edit2.type_keys('EC_CLK{ENTER}')
-
-        ext_var = self.pduart
-        title = f'^D{ext_var}.*'
-        btn = main_window.child_window(title_re=title, control_type="Button")
-        btn.Edit2.type_keys('^a')
-        #Edit the content and submit it.
-        btn.Edit2.type_keys('PD_UART{ENTER}')
+        actions_amd = [
+            {"ext_var": self.icc1, "label": "CC1"},
+            {"ext_var": self.icc2, "label": "CC2"},
+            {"ext_var": self.isbu1, "label": "SBU1"},
+            {"ext_var": self.isbu2, "label": "SBU2"},
+            {"ext_var": self.ivbus, "label": "VBUS"},
+            {"ext_var": self.ecint, "label": "EC_INT"},
+            {"ext_var": self.ecsda, "label": "EC_SDA"},
+            {"ext_var": self.ecclk, "label": "EC_CLK"},
+            {"ext_var": self.pduart, "label": "PD_UART"},
+            {"ext_var": self.aint, "label": "APU_INT"},
+            {"ext_var": self.arst, "label": "APU_RST"},
+            {"ext_var": self.asda, "label": "APU_SDA"},
+            {"ext_var": self.aclk, "label": "APU_CLK"},
+            {"ext_var": self.mpwr, "label": "MUX_PWR/HPD"},
+            {"ext_var": self.msda, "label": "MUX_SDA"},
+            {"ext_var": self.mclk, "label": "MUX_CLK"}
+        ]
 
         if self.platform == 'INTEL':               # INTEL 
-            ext_var = self.rint
-            title = f'^D{ext_var}.*'
-            btn = main_window.child_window(title_re=title, control_type="Button")
-            btn.Edit2.type_keys('^a')
-            #Edit the content and submit it.
-            btn.Edit2.type_keys('RIDGE_INT{ENTER}')
-
-            ext_var = self.rsda
-            title = f'^D{ext_var}.*'
-            btn = main_window.child_window(title_re=title, control_type="Button")
-            btn.Edit2.type_keys('^a')
-            #Edit the content and submit it.
-            btn.Edit2.type_keys('RIDGE_SDA{ENTER}')
-
-            ext_var = self.rclk
-            title = f'^D{ext_var}.*'
-            btn = main_window.child_window(title_re=title, control_type="Button")
-            btn.Edit2.type_keys('^a')
-            #Edit the content and submit it.
-            btn.Edit2.type_keys('RIDGE_CLK{ENTER}')
-
-            ext_var = self.bpwr
-            title = f'^D{ext_var}.*'
-            btn = main_window.child_window(title_re=title, control_type="Button")
-            btn.Edit2.type_keys('^a')
-            #Edit the content and submit it.
-            btn.Edit2.type_keys('BBR_PWR{ENTER}')
-
-            ext_var = self.brst
-            title = f'^D{ext_var}.*'
-            btn = main_window.child_window(title_re=title, control_type="Button")
-            btn.Edit2.type_keys('^a')
-            #Edit the content and submit it.
-            btn.Edit2.type_keys('BBR_RST{ENTER}')
-
-            ext_var = self.bsda
-            title = f'^D{ext_var}.*'
-            btn = main_window.child_window(title_re=title, control_type="Button")
-            btn.Edit2.type_keys('^a')
-            #Edit the content and submit it.
-            btn.Edit2.type_keys('BBR_SDA{ENTER}')
-
-            ext_var = self.bclk
-            title = f'^D{ext_var}.*'
-            btn = main_window.child_window(title_re=title, control_type="Button")
-            btn.Edit2.type_keys('^a')
-            #Edit the content and submit it.
-            btn.Edit2.type_keys('BBR_CLK{ENTER}')
-
+            comparison_actions = actions_intel
         elif self.platform == 'AMD':                # AMD
-            ext_var = self.aint
-            title = f'^D{ext_var}.*'
-            btn = main_window.child_window(title_re=title, control_type="Button")
-            btn.Edit2.type_keys('^a')
-            #Edit the content and submit it.
-            btn.Edit2.type_keys('APU_INT{ENTER}')
+            comparison_actions = actions_amd
 
-            ext_var = self.arst
-            title = f'^D{ext_var}.*'
-            btn = main_window.child_window(title_re=title, control_type="Button")
-            btn.Edit2.type_keys('^a')
-            #Edit the content and submit it.
-            btn.Edit2.type_keys('APU_RST{ENTER}')
+        for action in comparison_actions:
+            title = f'^D{action["ext_var"]}.*' if action["ext_var"] != 1 else f'D{action["ext_var"]} Channel 1'
+            try:
+                btn = main_window.child_window(title_re=title, control_type="Button")
+                btn.Edit2.set_text(action["label"])
+            except:
+                pass
 
-            ext_var = self.asda
-            title = f'^D{ext_var}.*'
-            btn = main_window.child_window(title_re=title, control_type="Button")
-            btn.Edit2.type_keys('^a')
-            #Edit the content and submit it.
-            btn.Edit2.type_keys('APU_SDA{ENTER}')
-
-            ext_var = self.aclk
-            title = f'^D{ext_var}.*'
-            btn = main_window.child_window(title_re=title, control_type="Button")
-            btn.Edit2.type_keys('^a')
-            #Edit the content and submit it.
-            btn.Edit2.type_keys('APU_CLK{ENTER}')
-
-            ext_var = self.mpwr
-            title = f'^D{ext_var}.*'
-            btn = main_window.child_window(title_re=title, control_type="Button")
-            btn.Edit2.type_keys('^a')
-            #Edit the content and submit it.
-            btn.Edit2.type_keys('MUX_PWR/HPD{ENTER}')
-
-            ext_var = self.msda
-            title = f'^D{ext_var}.*'
-            btn = main_window.child_window(title_re=title, control_type="Button")
-            btn.Edit2.type_keys('^a')
-            #Edit the content and submit it.
-            btn.Edit2.type_keys('MUX_SDA{ENTER}')
-
-            ext_var = self.mclk
-            title = f'^D{ext_var}.*'
-            btn = main_window.child_window(title_re=title, control_type="Button")
-            btn.Edit2.type_keys('^a')
-            #Edit the content and submit it.
-            btn.Edit2.type_keys('MUX_CLK{ENTER}')
+        main_window.type_keys('^0')
         
 def SaveToFile(self, main_window):
     currentdate = datetime.now().strftime("%Y%m%d")  # Format the current date as desired
@@ -323,6 +218,7 @@ def SaveToFile(self, main_window):
                 
             # Finally, save the capture to a file
             capture_filepath = os.path.join(output_dir, output_prefix + '.sal')
+            AssignSaleaeChannelName(self)
             capture.save_capture(filepath=capture_filepath)
 
             Logger_CaptureSettings(self, output_prefix + '.sal', True)
@@ -435,7 +331,6 @@ def Logger_CaptureSettings(self, log_name, ch_details):
         print(log_name)
 
         if self.recorddevice == String_SALEAE and ch_details:
-            AssignSaleaeChannelName(self)
             if self.platform == 'INTEL':               # INTEL 
                 print(' CC1:', self.icc1, '\tRIDGE INT:', self.rint, '\tBBR PWR:', self.bpwr)
                 print(' CC2:', self.icc2, '\tRIDGE SDA:', self.rsda, '\tBBR RST:', self.brst)

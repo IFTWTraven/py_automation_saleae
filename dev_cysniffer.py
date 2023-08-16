@@ -13,15 +13,15 @@ from pywinauto.keyboard import send_keys
 from save import SaveToFile
 import psutil
 
-# Function to send CTRL+R (refresh) keyboard shortcut
+# Function to send CTRL+R (Start) keyboard shortcut
 def send_ctrl_r(window):
     window.type_keys('^r')
 
-# Function to send CTRL+Q (quit) keyboard shortcut
+# Function to send CTRL+Q (Stop) keyboard shortcut
 def send_ctrl_q(window):
     window.type_keys('^q')
 
-# Function to send CTRL+Q (quit) keyboard shortcut
+# Function to send CTRL+S (Save) keyboard shortcut
 def send_ctrl_s(window):
     window.type_keys('^s')
 
@@ -153,13 +153,13 @@ def CySniffer_StopCapture(self):
         main_window = app.window(title="CY4500 EZ-PD™ Protocol Analyzer Utility")
            
         # Bring the window into focus (optional, only if it's not already focused)
-    #    main_window.set_focus()
+#        main_window.set_focus()
         #Send CTRL+Q
         send_ctrl_q(main_window)
         
         if self.savetofile:
             # Bring the window into focus (optional, only if it's not already focused)
-            main_window.set_focus()
+#            main_window.set_focus()
             capture_filepath = SaveToFile(self, main_window)
 
 #            main_window.set_focus()
@@ -168,8 +168,11 @@ def CySniffer_StopCapture(self):
             main_window.type_keys('^s')
             time.sleep(0.5)
 
-            child_window = main_window.child_window(title="Save", control_type="Window")
-            child_window.type_keys(capture_filepath)
+            child_window = main_window.child_window(title="File name:", control_type="Edit")
+            child_window.set_text(capture_filepath)
+
+#            child_window = main_window.child_window(title="Save", control_type="Window")
+#            child_window.type_keys(capture_filepath)
 #            send_keys(capture_filepath, pause=0.01)  # Type the desired file name into the Save dialog
             # Send Enter to save the file
 #            send_keys("{ENTER}")
