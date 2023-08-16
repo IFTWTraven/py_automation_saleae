@@ -33,7 +33,7 @@ def close_saleae_thread(self):
  
 def Saleae_StartCapture(self):
     manager = self.manager
-   
+  
     with manager.start_capture(
         device_id = self.sdevice[0].device_id,
         device_configuration = self.config,
@@ -74,11 +74,11 @@ def Saleae_Setup(self):
 
     if self.platform == 'INTEL':                                        # INTEL 
         enabled_ch = digital_ch_cc + digital_ch_intel
-        enabled_ch_i2c = [self.rsda, self.rclk, self.bsda, self.bclk]
+        enabled_ch_i2c = [self.ecsda, self.ecclk, self.rsda, self.rclk, self.bsda, self.bclk]
 #        enabled_analog_ch = analog_ch_cc + analog_ch_intel
     elif self.platform == 'AMD':                                        # AMD
         enabled_ch = digital_ch_cc + digital_ch_amd
-        enabled_ch_i2c = [self.asda, self.aclk, self.msda, self.mclk]
+        enabled_ch_i2c = [self.ecsda, self.ecclk, self.asda, self.aclk, self.msda, self.mclk]
 #        enabled_analog_ch = analog_ch_cc + analog_ch_amd
     
     try:
@@ -101,8 +101,7 @@ def Saleae_Setup(self):
             
             if (self.analogmode):
                 analogue_rate_setting = 781_250
-                # only Pro skus support 1.2V
-                if "Pro" in sdevice:
+                if sdevice:
                     config = automation.LogicDeviceConfiguration(
                         enabled_digital_channels = enabled_ch,
                         enabled_analog_channels = enabled_analog_ch,
@@ -118,8 +117,7 @@ def Saleae_Setup(self):
                         analog_sample_rate = analogue_rate_setting
                     )
             else:
-                # only Pro skus support 1.2V
-                if "Pro" in sdevice:
+                if sdevice:
                     config = automation.LogicDeviceConfiguration(
                         enabled_digital_channels = enabled_ch,
                         digital_sample_rate = 6_250_000,
