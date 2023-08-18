@@ -4,22 +4,28 @@ from PyQt5.QtWidgets import QApplication, QMessageBox
 from backend import *
 from logo import Ui_Dlg_logo
 
+import sys
 import time
 import os
-   
-if __name__ == '__main__':
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    window = MainWindow_controller()
 
+def showLogo():
+    applogo = QtWidgets.QApplication(sys.argv)
     logo = QtWidgets.QMainWindow()
     ui = Ui_Dlg_logo()
     ui.setupUi(logo)
     logo.setWindowFlags(Qt.FramelessWindowHint)
     logo.show()
 
-    time.sleep(1)
+    logotimer = QtCore.QTimer()
+    logotimer.timeout.connect(applogo.quit)
+    logotimer.start(1000)
 
+    applogo.exec_()
+
+def runMainWindow():
+    app = QtWidgets.QApplication(sys.argv)
+    window = MainWindow_controller()
+    
     if not is_usb_device_present(SALEAE_VID, SALEAE_PID) and not is_usb_device_present(ELLISYS_VID, ELLISYS_PID):
         message = 'Please attach Saleae Logic 16 Pro or Ellisys C-Tracker and try again.'
         QMessageBox.warning(None, "No Device", message)
@@ -65,13 +71,14 @@ if __name__ == '__main__':
                 message = 'Ellisys Type-C Tracker Analyzer RemoteControl plugin does not exist.'
                 QMessageBox.warning(None, "Not Install", message)
                 sys.exit(1)
-
     # All checked. 
     # Set the window flags to always stay on top
     window.setWindowFlags(window.windowFlags() | Qt.WindowStaysOnTopHint)   
     window.setWindowFlags(window.windowFlags() & ~Qt.WindowMaximizeButtonHint)
     window.show()
-        
-    logo.hide()
-       
+    
     sys.exit(app.exec_())
+    
+if __name__ == '__main__':
+    showLogo()
+    runMainWindow()
