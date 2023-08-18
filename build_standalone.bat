@@ -3,4 +3,7 @@ pyinstaller -F --noconsole main.py -i docs/IFX_Logo.ico --name wcs_logger.exe
 pyinstaller -F main.py -i docs/IFX_Logo.ico --name wcs_logger_console.exe
 copy dist\wcs_logger.exe binary\.
 copy dist\wcs_logger_console.exe binary\.
+del *.spec
+rmdir build /s /q
+rmdir dist /s /q
 PAUSE
