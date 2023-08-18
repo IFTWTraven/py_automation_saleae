@@ -908,7 +908,7 @@ class Ui_Dg_Main(object):
         self.label_ECSDA_3.setGeometry(QtCore.QRect(20, 70, 51, 21))
         self.label_ECSDA_3.setObjectName("label_ECSDA_3")
         self.cB_ECCLK_3 = QtWidgets.QComboBox(self.gB_PDEC_3)
-        self.cB_ECCLK_3.setGeometry(QtCore.QRect(80, 110, 51, 21))
+        self.cB_ECCLK_3.setGeometry(QtCore.QRect(80, 100, 51, 21))
         self.cB_ECCLK_3.setMaxVisibleItems(16)
         self.cB_ECCLK_3.setObjectName("cB_ECCLK_3")
         self.cB_ECCLK_3.addItem("")

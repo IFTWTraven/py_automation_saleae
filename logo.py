@@ -16,10 +16,10 @@ class Ui_Dlg_logo(object):
         Dlg_logo.setObjectName("Dlg_logo")
         Dlg_logo.resize(480, 270)
         self.label = QtWidgets.QLabel(Dlg_logo)
-        self.label.setGeometry(QtCore.QRect(0, 0, 480, 270))
+        self.label.setGeometry(QtCore.QRect(30, 30, 421, 211))
         self.label.setText("")
         self.label.setPixmap(QtGui.QPixmap(":/img/docs/background.png"))
-        self.label.setScaledContents(False)
+        self.label.setScaledContents(True)
         self.label.setObjectName("label")
 
         self.retranslateUi(Dlg_logo)
