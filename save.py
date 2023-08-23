@@ -167,7 +167,7 @@ def SaveToFile(self, main_window):
             
             Logger_CaptureSettings(self, output_prefix + '.ccgx3', False)
             
-            return capture_filepath
+#            return capture_filepath
         else:
             capture = self.capture
 
@@ -315,6 +315,9 @@ def SaveToFile(self, main_window):
     workbook.active = workbook.index(workbook[self.sheetname])
     # Save the changes
     workbook.save(tracker_filepath)
+
+    if main_window != None:             # CY4500 case
+        return capture_filepath
 
 def Logger_CaptureSettings(self, log_name, ch_details):
     # Store output in a timestamped directory

@@ -8,10 +8,11 @@ import time
 
 import winreg
 import re
-from pywinauto import Application
+from pywinauto import Desktop, Application
 from pywinauto.keyboard import send_keys
 from save import SaveToFile
 import psutil
+import locale
 
 # Function to send CTRL+R (Start) keyboard shortcut
 def send_ctrl_r(window):
@@ -25,12 +26,38 @@ def send_ctrl_q(window):
 def send_ctrl_s(window):
     window.type_keys('^s')
 
+def restore_minimized_window(process_id):
+    desktop = Desktop(backend="uia")
+    
+    for window in desktop.windows():
+        if window.process_id() == process_id:
+            if window.is_minimized():
+                window.set_focus()  # This action can also restore a minimized window
+#                print(f"Restored window for app with process ID {process_id}.")
+                return True
+            else:
+#                print(f"Window for app with process ID {process_id} is not minimized.")
+                return False
+    
+#    print(f"No window found for app with process ID {process_id}.")
+    return False
+
 def find_running_app(app_name):
     # Check if the application is already running
     for proc in psutil.process_iter(['pid', 'name']):
         if proc.info['name'] == app_name:
+            restore_minimized_window(proc.info['pid'])
             return proc
-            
+
+def get_display_language():
+    try:
+        user_locale, _ = locale.getdefaultlocale()
+        return user_locale
+        
+    except Exception as e:
+        print("Error:", e)
+        return None
+        
 def check_for_child_window(max_waiting_time, main_window):
     # Launch the application
 #    app = launch_app()
@@ -69,14 +96,17 @@ def check_for_child_window(max_waiting_time, main_window):
 def search_and_run_cysniffer():
     app_name = "EZ-PD Protocol Analyzer Utility"  # Replace this with the name of the app you're searching for
     app_name2 = "CY4500_EZ_PD_Protocol_Analyzer_Utility.exe"  # Replace this with the name of the app you're searching for
-    app_title = "CY4500 EZ-PD™ Protocol Analyzer Utility"
+#    app_title = "CY4500 EZ-PD™ Protocol Analyzer Utility"
+    app_title = "^CY4500.*"
     # Check if the application is already running
     running_app = find_running_app(app_name2)
     if running_app:
 #        print(f"{app_name} is already running (PID: {running_app.info['pid']}).")
         # You can return the information about the running app if needed
         app = Application(backend="uia").connect(process=running_app.info['pid'])
-        main_window = app.window(title=app_title)
+#        main_window = app.window(title=app_title)
+        
+        main_window = app.window(title_re=app_title)
         main_window.set_focus()
         try:
             main_window.restore()
@@ -90,7 +120,7 @@ def search_and_run_cysniffer():
 
     if os.path.exists(cy4500_bin):
         app = Application(backend="uia").start(cy4500_bin)
-        main_window = app.window(title=app_title)
+        main_window = app.window(title_re=app_title)
         main_window.set_focus()
         try:
             main_window.restore()
@@ -102,7 +132,7 @@ def search_and_run_cysniffer():
         if installation_path != None:
             app_path = installation_path + app_name2  # Replace with the actual path of your 3rd party application
             app = Application(backend="uia").start(app_path)
-            main_window = app.window(title=app_title)
+            main_window = app.window(title_re_=app_title)
             main_window.set_focus()
 
             try:
@@ -138,7 +168,8 @@ def CySniffer_StartCapture():
 
     if app != None:
         # Get the main window
-        main_window = app.window(title="CY4500 EZ-PD™ Protocol Analyzer Utility")
+#        main_window = app.window(title="CY4500 EZ-PD™ Protocol Analyzer Utility")
+        main_window = app.window(title_re="^CY4500.*")
 
 #        send_keys("{ENTER}")
         # check if the save confirmation dialog is still running
@@ -150,10 +181,9 @@ def CySniffer_StopCapture(self):
 
     if app != None:
         # Get the main window
-        main_window = app.window(title="CY4500 EZ-PD™ Protocol Analyzer Utility")
-           
-        # Bring the window into focus (optional, only if it's not already focused)
-#        main_window.set_focus()
+#        main_window = app.window(title="CY4500 EZ-PD™ Protocol Analyzer Utility")
+        main_window = app.window(title_re="^CY4500.*")
+
         #Send CTRL+Q
         send_ctrl_q(main_window)
         
@@ -168,14 +198,21 @@ def CySniffer_StopCapture(self):
             main_window.type_keys('^s')
             time.sleep(0.5)
 
-            child_window = main_window.child_window(title="File name:", control_type="Edit")
-            child_window.set_text(capture_filepath)
+            ret_lang = get_display_language()
+            disp_lang = ret_lang[:2]
+            
+            if disp_lang == "en":
+                child_window = main_window.child_window(title="File name:", control_type="Edit")   
+            else:
+                child_window = main_window.child_window(title_re="^檔案名稱.*", control_type="Edit")
 
-#            child_window = main_window.child_window(title="Save", control_type="Window")
-#            child_window.type_keys(capture_filepath)
-#            send_keys(capture_filepath, pause=0.01)  # Type the desired file name into the Save dialog
-            # Send Enter to save the file
-#            send_keys("{ENTER}")
+            child_window.set_text(capture_filepath)
+            
+            """
+            # send strings directly
+            child_window = main_window.child_window(title="Save", control_type="Window")
+            child_window.type_keys(capture_filepath)
+            """
             child_window.type_keys("{ENTER}")
 
 # Click ENTER again as hit OK in Save confirmation dialog

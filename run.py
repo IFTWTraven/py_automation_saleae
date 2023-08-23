@@ -30,7 +30,7 @@ def run_StartCapture(self):
 # #            self.apistr = 'launch'          # run automation.Manager.launch()
             # self.apistr = 'connect'         # run automation.Manager.connect()
             # self.saleae_is_running = True
-
+        
         if not chk_LogApplicationRunning("Logic.exe"):
             search_and_run_saleae(self)
         self.apistr = 'connect'         # run automation.Manager.connect()
