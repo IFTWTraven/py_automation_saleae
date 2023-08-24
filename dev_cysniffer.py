@@ -12,6 +12,7 @@ from pywinauto import Desktop, Application
 from pywinauto.keyboard import send_keys
 from save import SaveToFile
 import psutil
+import ctypes
 import locale
 
 # Function to send CTRL+R (Start) keyboard shortcut
@@ -50,13 +51,13 @@ def find_running_app(app_name):
             return proc
 
 def get_display_language():
-    try:
-        user_locale, _ = locale.getdefaultlocale()
-        return user_locale
-        
-    except Exception as e:
-        print("Error:", e)
-        return None
+    # Get the user default UI language
+    lang_id = ctypes.windll.kernel32.GetUserDefaultUILanguage()
+
+    # Convert the language ID to a string in the format "languageCode_countryCode"
+    lang_code = locale.windows_locale[lang_id]
+
+    return lang_code
         
 def check_for_child_window(max_waiting_time, main_window):
     # Launch the application
@@ -200,6 +201,7 @@ def CySniffer_StopCapture(self):
 
             ret_lang = get_display_language()
             disp_lang = ret_lang[:2]
+            print(ret_lang, disp_lang)
             
             if disp_lang == "en":
                 child_window = main_window.child_window(title="File name:", control_type="Edit")   
