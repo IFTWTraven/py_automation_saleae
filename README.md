@@ -2,7 +2,7 @@
 
 ## Youtube 
 
-[![WCS Logger - The assistant in Infineon WCS USBC host applications](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=Zy7FzoSF6Ks)
+[![WCS Logger - The assistant in Infineon WCS USBC host applications](/docs/host_logger_yt.png)](https://www.youtube.com/watch?v=Zy7FzoSF6Ks)
 
 ## Screenshot
 
